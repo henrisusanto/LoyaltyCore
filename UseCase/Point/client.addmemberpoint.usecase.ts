@@ -20,7 +20,6 @@ export class ClientAddMemberPoint {
         Amount,
         Remarks
       )
-      let member = new 
       return this.repository.save (Point)
     } catch (error) {
       throw new Error (error)
