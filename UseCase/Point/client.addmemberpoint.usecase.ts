@@ -1,7 +1,5 @@
 import { PointRepositoryInterface } from '../../RepositoryInterface/point.repositoryinterface'
-import { MemberRepositoryInterface } from '../../RepositoryInterface/member.repositoryinterface'
 import { PointHeaderAggregateRoot } from '../../AggregateRoot/pointheader.aggregateroot'
-import { MemberEntity } from '../../Entity/member.entity'
 
 export class ClientAddMemberPoint {
 
@@ -15,12 +13,12 @@ export class ClientAddMemberPoint {
     try {
       let Point = new PointHeaderAggregateRoot ()
       Point.ClientAddMemberPoint (
-        this.repository.generateId (),
+        await this.repository.generateId (),
         Member,
         Amount,
         Remarks
       )
-      return this.repository.save (Point)
+      return this.repository.insert (Point)
     } catch (error) {
       throw new Error (error)
     }

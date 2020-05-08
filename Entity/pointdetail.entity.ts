@@ -36,14 +36,6 @@ export class PointDetailEntity {
 		return this.Amount
 	}
 
-	public fromJSON (data: PointDetailJSON): void {
-		this.Id = data.Id
-		this.PointHeader = data.PointHeader
-		this.Amount = data.Amount
-		this.Activity = data.Activity
-		this.ExpiredDate = data.ExpiredDate
-	}
-
 	public toJSON (): PointDetailJSON {
 		return {
 			Id: this.Id,

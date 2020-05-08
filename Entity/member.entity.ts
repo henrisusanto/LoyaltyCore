@@ -72,6 +72,11 @@ export class MemberEntity {
 		this.Status = true
 	}
 
+	public updatePoint (point: number): void {
+		if ( point > 0 ) this.YTDPoint += point
+		this.LifetimePoint += point
+	}
+
 	public fromJSON (data: MemberJSON): void {
 		this.Id = data.Id
 		this.FullName = data.FullName

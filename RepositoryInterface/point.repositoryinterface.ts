@@ -2,5 +2,6 @@ import { PointHeaderAggregateRoot } from '../AggregateRoot/pointheader.aggregate
 
 export interface PointRepositoryInterface {
 	generateId (): Promise <number>;
-	save (data: PointHeaderAggregateRoot): Promise <number>;
+	insert (data: PointHeaderAggregateRoot): Promise <number>;
+	publishEventAfterInsertPoint (data: PointHeaderAggregateRoot): void;
 }

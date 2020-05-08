@@ -73,20 +73,6 @@ export class PointHeaderAggregateRoot {
 
 	}
 
-	public fromJSON (data: PointHeaderJSON): void {
-		this.Id = data.Id
-		this.Member = data.Member
-		this.Status = data.Status
-		this.Amount = data.Amount
-		this.Remarks= data.Remarks
-		this.Details = []
-		for (let detail of data.Details) {
-			let pde = new PointDetailEntity ()
-			pde.fromJSON (detail)
-			this.Details.push (pde)
-		}
-	}
-
 	public toJSON (): PointHeaderJSON {
 		let pdJSON: PointDetailJSON [] = []
 		for (let detail of this.Details) {
@@ -99,6 +85,13 @@ export class PointHeaderAggregateRoot {
 			Amount: this.Amount,
 			Remarks: this.Remarks,
 			Details: pdJSON
+		}
+	}
+
+	public getDataForUpdatingMemberPoint () {
+		return {
+			Member: this.Member,
+			Amount: this.Amount
 		}
 	}
 
