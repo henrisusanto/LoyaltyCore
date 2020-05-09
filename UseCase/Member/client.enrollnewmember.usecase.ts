@@ -1,7 +1,7 @@
 import { MemberRepositoryInterface } from '../../RepositoryInterface/member.repositoryinterface'
 import { MemberEntity, ProfileJSON } from '../../Entity/member.entity'
 
-export class ClientEnrollNewMember {
+export class ClientEnrollNewMemberUseCase {
 
 	protected repository
 

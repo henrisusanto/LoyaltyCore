@@ -1,7 +1,7 @@
 import { ConfigRepositoryInterface } from '../../RepositoryInterface/config.repositoryinterface'
 import { ConfigEntity } from '../../Entity/config.entity'
 
-export class ClientUpdatePointName {
+export class ClientUpdatePointNameUseCase {
 
 	protected repository
 

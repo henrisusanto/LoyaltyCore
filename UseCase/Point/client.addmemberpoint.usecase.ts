@@ -1,7 +1,7 @@
 import { PointRepositoryInterface } from '../../RepositoryInterface/point.repositoryinterface'
 import { PointHeaderAggregateRoot } from '../../AggregateRoot/pointheader.aggregateroot'
 
-export class ClientAddMemberPoint {
+export class ClientAddMemberPointUseCase {
 
 	protected repository
 

@@ -1,7 +1,7 @@
 import { MemberRepositoryInterface } from '../../RepositoryInterface/member.repositoryinterface'
 import { PointHeaderAggregateRoot } from '../../AggregateRoot/pointheader.aggregateroot'
 
-export class EventUpdateMemberPoint {
+export class EventUpdateMemberPointUseCase {
 
   protected repository
 

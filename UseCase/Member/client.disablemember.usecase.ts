@@ -1,6 +1,6 @@
 import { MemberRepositoryInterface } from '../../RepositoryInterface/member.repositoryinterface'
 
-export class ClientDisableMember {
+export class ClientDisableMemberUseCase {
 
 	protected repository
 

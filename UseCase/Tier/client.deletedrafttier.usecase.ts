@@ -1,6 +1,6 @@
 import { TierRepositoryInterface } from '../../RepositoryInterface/tier.repositoryinterface'
 
-export class ClientDeleteDraftTier {
+export class ClientDeleteDraftTierUseCase {
 
 	protected repository
 

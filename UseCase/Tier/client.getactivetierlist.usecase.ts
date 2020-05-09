@@ -1,7 +1,7 @@
 import { TierRepositoryInterface } from '../../RepositoryInterface/tier.repositoryinterface'
 import { TierJSON } from '../../AggregateRoot/tier.aggregateroot'
 
-export class ClientGetActiveTierList {
+export class ClientGetActiveTierListUseCase {
 
 	protected repository
 

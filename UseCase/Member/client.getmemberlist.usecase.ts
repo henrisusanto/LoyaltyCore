@@ -1,6 +1,6 @@
 import { MemberRepositoryInterface, MemberListParameter } from '../../RepositoryInterface/member.repositoryinterface'
 
-export class ClientGetMemberList {
+export class ClientGetMemberListUseCase {
 	protected repository
 
 	constructor (repositoryConcrete: MemberRepositoryInterface) {

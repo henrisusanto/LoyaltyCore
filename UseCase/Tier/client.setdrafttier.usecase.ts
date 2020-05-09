@@ -1,7 +1,7 @@
 import { TierRepositoryInterface } from '../../RepositoryInterface/tier.repositoryinterface'
 import { TierAggregateRoot, SimpleTierJSON } from '../../AggregateRoot/tier.aggregateroot'
 
-export class ClientSetDraftTier {
+export class ClientSetDraftTierUseCase {
 
 	protected repository
 
