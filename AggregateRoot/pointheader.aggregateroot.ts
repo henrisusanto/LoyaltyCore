@@ -3,7 +3,6 @@ import { PointDetailEntity, PointDetailJSON } from '../Entity/pointdetail.entity
 export interface PointHeaderJSON {
 	Id: number
 	Member: number
-	Status: string
 	Amount: number
 	Remarks: string
 	Details: PointDetailJSON[]
@@ -12,7 +11,6 @@ export interface PointHeaderJSON {
 export class PointHeaderAggregateRoot {
 	protected Id: number
 	protected Member: number
-	protected Status: string // Actived, Cancelled
 	protected Amount: number
 	protected Remarks: string
 	protected Details: PointDetailEntity[]
@@ -20,7 +18,6 @@ export class PointHeaderAggregateRoot {
 	public ClientAddMemberPoint (Id:number, Member: number, Amount: number, Remarks: string) {
 		this.Id = Id
 		this.Member = Member
-		this.Status = 'Actived'
 		this.Amount = Amount
 		this.Remarks= Remarks
 
@@ -38,7 +35,6 @@ export class PointHeaderAggregateRoot {
 
 		this.Id = Id
 		this.Member = Member
-		this.Status = 'Actived'
 		this.Amount = Amount
 		this.Remarks= Remarks
 
@@ -54,7 +50,6 @@ export class PointHeaderAggregateRoot {
 	public SystemExpireMemberPoint (Id: number, Member: number, Details: PointDetailEntity []) {
 		this.Id = Id
 		this.Member = Member
-		this.Status = 'Actived'
 		this.Amount = 0
 		this.Details= []
 
@@ -81,7 +76,6 @@ export class PointHeaderAggregateRoot {
 		return {
 			Id: this.Id,
 			Member: this.Member,
-			Status: this.Status,
 			Amount: this.Amount,
 			Remarks: this.Remarks,
 			Details: pdJSON
