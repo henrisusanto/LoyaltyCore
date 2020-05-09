@@ -3,7 +3,6 @@ import { PointDetailEntity, PointDetailJSON } from '../Entity/pointdetail.entity
 export interface PointHeaderJSON {
 	Id: number
 	Member: number
-	Amount: number
 	Remarks: string
 	Details: PointDetailJSON[]
 }
@@ -18,7 +17,6 @@ export class PointHeaderAggregateRoot {
 	public ClientAddMemberPoint (Id:number, Member: number, Amount: number, Remarks: string) {
 		this.Id = Id
 		this.Member = Member
-		this.Amount = Amount
 		this.Remarks= Remarks
 
 		let detail = new PointDetailEntity ()
@@ -35,7 +33,6 @@ export class PointHeaderAggregateRoot {
 
 		this.Id = Id
 		this.Member = Member
-		this.Amount = Amount
 		this.Remarks= Remarks
 
 		let detail = new PointDetailEntity ()
@@ -50,7 +47,6 @@ export class PointHeaderAggregateRoot {
 	public SystemExpireMemberPoint (Id: number, Member: number, Details: PointDetailEntity []) {
 		this.Id = Id
 		this.Member = Member
-		this.Amount = 0
 		this.Details= []
 
 		for ( let detail of Details ) {
@@ -76,7 +72,6 @@ export class PointHeaderAggregateRoot {
 		return {
 			Id: this.Id,
 			Member: this.Member,
-			Amount: this.Amount,
 			Remarks: this.Remarks,
 			Details: pdJSON
 		}
@@ -85,7 +80,7 @@ export class PointHeaderAggregateRoot {
 	public getDataForUpdatingMemberPoint () {
 		return {
 			Member: this.Member,
-			Amount: this.Amount
+			Amount: 0
 		}
 	}
 
