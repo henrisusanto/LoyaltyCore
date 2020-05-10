@@ -14,7 +14,7 @@ export class PointHeaderAggregateRoot {
 	protected Remarks: string
 	protected Details: PointDetailEntity[]
 
-	public ClientAddMemberPoint (Id:number, Member: number, Amount: number, Remarks: string) {
+	public ClientAddMemberPoint (Id:number, Member: number, YTDAmount: number, LifetimeAmount: number, Remarks: string) {
 		this.Id = Id
 		this.Member = Member
 		this.Remarks= Remarks
@@ -22,14 +22,16 @@ export class PointHeaderAggregateRoot {
 		let detail = new PointDetailEntity ()
 		detail.create({
 			PointHeader: Id,
-			Amount,
+			YTDAmount,
+			LifetimeAmount,
 			Activity: 'MANUAL_ADD'
 		})
 		this.Details = [detail]
 	}
 
-	public ClientDeductMemberPoint (Id:number, Member: number, Amount: number, Remarks: string) {
-		Amount *= -1
+	public ClientDeductMemberPoint (Id:number, Member: number, YTDAmount: number, LifetimeAmount: number, Remarks: string) {
+		YTDAmount *= -1
+		LifetimeAmount *= -1
 
 		this.Id = Id
 		this.Member = Member
@@ -38,30 +40,19 @@ export class PointHeaderAggregateRoot {
 		let detail = new PointDetailEntity ()
 		detail.create({
 			PointHeader: Id,
-			Amount,
+			YTDAmount,
+			LifetimeAmount,
 			Activity: 'MANUAL_DEDUCT'
 		})
 		this.Details = [detail]
 	}
 
-	public SystemExpireMemberPoint (Id: number, Member: number, Details: PointDetailEntity []) {
-		this.Id = Id
-		this.Member = Member
-		this.Details= []
+	public getMember (): number {
+		return this.Member
+	}
 
-		for ( let detail of Details ) {
-			this.Amount -= detail.getAmount ()
-
-			let expDetail = new PointDetailEntity ()
-			expDetail.create ({
-				PointHeader: Id,
-				Amount: detail.getAmount () * -1,
-				Activity: 'POINT_EXPIRED'
-			})
-			expDetail.overrideDefaultExpiredDate (new Date ())
-			this.Details.push (expDetail)
-		}
-
+	public getDetails (): PointDetailEntity[] {
+		return this.Details
 	}
 
 	public toJSON (): PointHeaderJSON {
@@ -74,13 +65,6 @@ export class PointHeaderAggregateRoot {
 			Member: this.Member,
 			Remarks: this.Remarks,
 			Details: pdJSON
-		}
-	}
-
-	public getDataForUpdatingMemberPoint () {
-		return {
-			Member: this.Member,
-			Amount: 0
 		}
 	}
 

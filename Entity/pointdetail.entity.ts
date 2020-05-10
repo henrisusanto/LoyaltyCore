@@ -2,27 +2,31 @@
 export interface PointDetailJSON {
 	Id: number
 	PointHeader: number
-	Amount: number
+	YTDAmount: number
+	LifetimeAmount: number
 	Activity: string
 	ExpiredDate: Date
 }
 
 export interface SimplePointDetailJSON {
 	PointHeader: number
-	Amount: number
+	YTDAmount: number
+	LifetimeAmount: number
 	Activity: string
 }
 
 export class PointDetailEntity {
 	protected Id: number
 	protected PointHeader: number
-	protected Amount: number
+	protected YTDAmount: number
+	protected LifetimeAmount: number
 	protected Activity: string
 	protected ExpiredDate: Date
 
 	public create (data: SimplePointDetailJSON): void {
 		this.PointHeader = data.PointHeader
-		this.Amount = data.Amount
+		this.YTDAmount = data.YTDAmount
+		this.LifetimeAmount = data.LifetimeAmount
 		this.Activity = data.Activity
 
 		this.ExpiredDate = new Date(new Date().setFullYear(new Date().getFullYear() + 2))
@@ -32,15 +36,19 @@ export class PointDetailEntity {
 		this.ExpiredDate = ExpiredDate
 	}
 
-	public getAmount ():number {
-		return this.Amount
+	public getAmount (): {YTDAmount: number, LifetimeAmount: number} {
+		return {
+			YTDAmount: this.YTDAmount,
+			LifetimeAmount: this.LifetimeAmount
+		}
 	}
 
 	public toJSON (): PointDetailJSON {
 		return {
 			Id: this.Id,
 			PointHeader: this.PointHeader,
-			Amount: this.Amount,
+			YTDAmount: this.YTDAmount,
+			LifetimeAmount: this.LifetimeAmount,
 			Activity: this.Activity,
 			ExpiredDate: this.ExpiredDate
 		}

@@ -9,13 +9,14 @@ export class ClientAddMemberPointUseCase {
 		this.repository = repositoryConcrete
 	}
 
-  public async execute (Member: number, Amount: number, Remarks: string) {
+  public async execute (Member: number, YTDAmount: number, LifetimeAmount:number, Remarks: string) {
     try {
       let Point = new PointHeaderAggregateRoot ()
       Point.ClientAddMemberPoint (
         await this.repository.generateId (),
         Member,
-        Amount,
+        YTDAmount,
+        LifetimeAmount,
         Remarks
       )
       return this.repository.insert (Point)

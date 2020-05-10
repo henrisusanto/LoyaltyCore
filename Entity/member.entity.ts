@@ -72,8 +72,11 @@ export class MemberEntity {
 		this.Status = true
 	}
 
-	public updatePoint (point: number): void {
-		if ( point > 0 ) this.YTDPoint += point
+	public addYTDPoint (point: number): void {
+		this.YTDPoint += point
+	}
+
+	public addLifetimePoint (point: number) : void {
 		this.LifetimePoint += point
 	}
 

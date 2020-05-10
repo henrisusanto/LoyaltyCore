@@ -11,9 +11,13 @@ export class EventUpdateMemberPointUseCase {
 
   public async execute (pointHeader: PointHeaderAggregateRoot) {
     try {
-      let { Member, Amount } = pointHeader.getDataForUpdatingMemberPoint ()
-      let member = await this.repository.findOne(Member)
-      member.updatePoint (Amount)
+      let id = pointHeader.getMember ()
+      let member = await this.repository.findOne(id)
+      for (let detail of pointHeader.getDetails ()) {
+        let { YTDAmount, LifetimeAmount } = detail.getAmount ()
+        member.addYTDPoint (YTDAmount)
+        member.addLifetimePoint (LifetimeAmount)
+      }
       return await this.repository.save (member)
     } catch (error) {
       throw new Error (error)
