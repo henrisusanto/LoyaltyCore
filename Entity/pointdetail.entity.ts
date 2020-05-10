@@ -29,7 +29,7 @@ export class PointDetailEntity {
 		this.LifetimeAmount = data.LifetimeAmount
 		this.Activity = data.Activity
 
-		this.ExpiredDate = new Date(new Date().setFullYear(new Date().getFullYear() + 2))
+		if (this.LifetimeAmount > 0) this.ExpiredDate = new Date(new Date().setFullYear(new Date().getFullYear() + 2))
 	}
 
 	public overrideDefaultExpiredDate (ExpiredDate: Date) {
