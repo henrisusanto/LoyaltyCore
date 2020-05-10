@@ -30,8 +30,8 @@ export class PointHeaderAggregateRoot {
 	}
 
 	public ClientDeductMemberPoint (Id:number, Member: number, YTDAmount: number, LifetimeAmount: number, Remarks: string) {
-		YTDAmount *= -1
-		LifetimeAmount *= -1
+		if (YTDAmount > 0) YTDAmount *= -1
+		if (LifetimeAmount > 0) LifetimeAmount *= -1
 
 		this.Id = Id
 		this.Member = Member
