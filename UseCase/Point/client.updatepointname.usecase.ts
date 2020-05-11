@@ -11,16 +11,20 @@ export class ClientUpdatePointNameUseCase {
 
   public async execute (name: string, abbr: string) {
     try {
-
-      const configName = await this.repository.findByName ('PointCurrencyName')
-      const configAbbr = await this.repository.findByName ('PointCurrencyAbbr')
-
-      configName.updateValue (name)
-      configAbbr.updateValue (abbr)
-
+      let configName, configAbbr
+      try {
+        let configName = await this.repository.findByName ('PointCurrencyName')
+        let configAbbr = await this.repository.findByName ('PointCurrencyAbbr')
+        configName.updateValue (name)
+        configAbbr.updateValue (abbr)
+      } catch (e) {
+        configName = new ConfigEntity ()
+        configName.create ('PointCurrencyName', name)
+        configAbbr = new ConfigEntity ()
+        configAbbr.create ('PointCurrencyAbbr', abbr)
+      }
       await this.repository.save (configName)
       await this.repository.save (configAbbr)
-
       return true
     } catch (error) {
       throw new Error (error)

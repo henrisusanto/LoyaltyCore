@@ -1,5 +1,4 @@
 import { MemberRepositoryInterface } from '../../RepositoryInterface/member.repositoryinterface'
-import { PointHeaderAggregateRoot } from '../../AggregateRoot/pointheader.aggregateroot'
 
 export class EventUpdateMemberPointUseCase {
 
@@ -9,7 +8,7 @@ export class EventUpdateMemberPointUseCase {
     this.repository = repositoryConcrete
   }
 
-  public async execute (pointHeader: PointHeaderAggregateRoot) {
+  public async execute (pointHeader) {
     try {
       let id = pointHeader.getMember ()
       let member = await this.repository.findOne(id)

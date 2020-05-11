@@ -10,6 +10,11 @@ export class ConfigEntity {
 	protected Name: string
 	protected ConfigValue: string
 
+	public create (Name: string, ConfigValue: string): void {
+		this.Name = Name
+		this.ConfigValue = ConfigValue
+	}
+
 	public updateValue (value: string): void {
 		this.ConfigValue = value
 	}

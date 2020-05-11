@@ -16,7 +16,7 @@ export class LoyaltyCoreEventRegister {
 
 		// after insert point, update member.point
 		DomainEvent.subscribe ('AfterInsertPoint', async (pointHeader) => {
-			await this.updateMemberPointEventHandler.callUseCase (pointHeader)
+			// this.updateMemberPointEventHandler.callUseCase (pointHeader)
 		})
 
 	}
