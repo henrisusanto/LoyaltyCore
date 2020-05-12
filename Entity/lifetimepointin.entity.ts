@@ -9,6 +9,14 @@ export interface LifetimePointInJSON {
 	Available: number
 }
 
+interface LifetimeInCreate {
+	Member: number
+	Activity: string
+	Reference: number
+	DateIn: Date
+	Amount: number
+}
+
 export class LifetimePointInEntity {
 	protected Id: number
 	protected Member: number
@@ -17,6 +25,20 @@ export class LifetimePointInEntity {
 	protected DateIn: Date
 	protected Amount: number
 	protected Available: number
+
+	public create (data: LifetimeInCreate) {
+		this.Member = data.Member
+		this.Activity = data.Activity
+		this.Reference = data.Reference
+
+		if ( false === data.DateIn instanceof Date ) {
+			data.DateIn = data.DateIn ? new Date (data.DateIn) : new Date ()
+		}
+		this.DateIn = data.DateIn
+
+		this.Amount = data.Amount
+		this.Available = data.Amount
+	}
 
 	public fromJSON (data: LifetimePointInJSON): void {
 		this.Id = data.Id

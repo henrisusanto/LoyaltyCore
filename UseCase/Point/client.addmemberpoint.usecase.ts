@@ -12,7 +12,8 @@ export class ClientAddMemberPointUseCase {
   public async execute (Member: number, ManualDate: Date, YTD: number, Lifetime: number, Remarks: string) {
     try {
       let manualPoint = new ManualPointAggregateRoot ()
-      manualPoint.create(
+      manualPoint.add (
+        await this.repository.generateId (),
         Member,
         ManualDate,
         YTD,
