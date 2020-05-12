@@ -7,7 +7,7 @@ export interface ManualPointJSON {
 	Remarks: string
 }
 
-export class ManualPointEntity {
+export class ManualPointAggregateRoot {
 	protected Id: number
 	protected Member: number
 	protected ManualDate: Date

@@ -1,5 +1,5 @@
 import { ManualPointRepositoryInterface } from '../../RepositoryInterface/manualpoint.repositoryinterface'
-import { ManualPointEntity } from '../../Entity/manualpoint.entity'
+import { ManualPointAggregateRoot } from '../../AggregateRoot/manualpoint.aggregateroot'
 
 export class ClientAddMemberPointUseCase {
 
@@ -11,7 +11,7 @@ export class ClientAddMemberPointUseCase {
 
   public async execute (Member: number, ManualDate: Date, YTD: number, Lifetime: number, Remarks: string) {
     try {
-      let manualPoint = new ManualPointEntity ()
+      let manualPoint = new ManualPointAggregateRoot ()
       manualPoint.create(
         Member,
         ManualDate,

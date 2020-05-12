@@ -1,6 +1,5 @@
-import { ManualPointEntity } from '../Entity/manualpoint.entity'
+import { ManualPointAggregateRoot } from '../AggregateRoot/manualpoint.aggregateroot'
 
 export interface ManualPointRepositoryInterface {
-	insert (data: ManualPointEntity): Promise <number>
-	triggerAfterInsertManualPoint (data: ManualPointEntity, Id: number): void
+	insert (data: ManualPointAggregateRoot): Promise <number>
 }
