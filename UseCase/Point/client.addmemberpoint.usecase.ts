@@ -9,17 +9,17 @@ export class ClientAddMemberPointUseCase {
 		this.repository = repository
 	}
 
-  public async execute (Member: number, ManualDate: Date, YTD: number, Lifetime: number) {
+  public async execute (Member: number, ManualDate: Date, YTD: number, Lifetime: number, Remarks: string) {
     try {
       let manualPoint = new ManualPointEntity ()
-      manualPoint.create({
-        Id: await this.repository.generateId (),
+      manualPoint.create(
         Member,
         ManualDate,
         YTD,
-        Lifetime
-      })
-      this.repository.insert (manualPoint)
+        Lifetime,
+        Remarks
+      )
+      return await this.repository.insert (manualPoint)
     } catch (error) {
       throw new Error (error)
     }
