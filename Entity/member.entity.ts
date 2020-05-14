@@ -72,6 +72,10 @@ export class MemberEntity {
 		this.Status = true
 	}
 
+	public getId (): number {
+		return this.Id
+	}
+
 	public addYTDPoint (point: number): void {
 		this.YTDPoint += point
 	}
