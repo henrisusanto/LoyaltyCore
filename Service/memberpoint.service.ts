@@ -112,27 +112,41 @@ export class MemberPointService {
 		}
 
 		// validate amount
-		let totalAvailable = 0
+		let totalAvailable: number = 0
 		for (let LTin of this.LifetimePoints) totalAvailable += LTin.getRemaining ()
 		if (totalAvailable < Math.abs (Amount)) throw new Error ('Insufficient Lifetime Point')
-		else return this.fifo(Amount, Activity, Reference, Remarks)
+		else {
+			try {
+				this.fifo(Amount, Activity, Reference, Remarks)
+				this.Member.addLifetimePoint (Amount < 0 ? Amount : Amount * -1)
+				return true
+			} catch (e) {
+				throw new Error (e)
+			}
+		}
 
 	}
 
 	private fifo (UsageAmount: number, Activity: string, Reference: number, Remarks: string) {
-		this.LifetimePoints.sort ((a, b) => {
-			return b.getDateIn().getTime() - a.getDateIn().getTime()
-		})
+		try {
+			UsageAmount = Math.abs (UsageAmount)
+			this.LifetimePoints.sort ((a, b) => {
+				return b.getDateIn().getTime() - a.getDateIn().getTime()
+			})
 
-		var LTinIndex: number = 0
-		while (UsageAmount > 0) {
-			let UsageToSubmit: number = UsageAmount - this.LifetimePoints[LTinIndex].getRemaining()
-			this.LifetimePoints[LTinIndex].submitNewUsage (UsageToSubmit < 1 ? UsageAmount : UsageToSubmit, Activity, Reference, Remarks)
-			UsageAmount = UsageToSubmit
-			LTinIndex++
+			var LTinIndex: number = 0
+			while (UsageAmount > 0) {
+				let UsageToSubmit: number = UsageAmount - this.LifetimePoints[LTinIndex].getRemaining()
+				this.LifetimePoints[LTinIndex].submitNewUsage (UsageToSubmit < 1 ? UsageAmount : UsageToSubmit, Activity, Reference, Remarks)
+				UsageAmount = UsageToSubmit
+				LTinIndex++
+			}
+
+			return true
+		} catch (e) {
+			throw new Error (e)
 		}
 
-		return true
 	}
 
 }

@@ -79,6 +79,7 @@ export class LifetimePointAggregateRoot {
 		})
 		this.Usage.push (newUsage)
 		this.Remaining -= newUsage.getAmount ()
+		this.HasChanges = true
 	}
 
 	public fromJSON (data: LifetimePointJSON) {
