@@ -43,6 +43,16 @@ export class YTDPointEntity {
 		return this.Amount
 	}
 
+	public fromJSON (data: YTDPointJSON): void {
+		this.Id = data.Id
+		this.Member = data.Member
+		this.Activity = data.Activity
+		this.Reference = data.Reference
+		this.Amount = data.Amount
+		this.Year = data.Year
+		this.Remarks = data.Remarks
+	}
+
 	public toJSON (): YTDPointJSON {
 		return {
 			Id: this.Id,

@@ -6,7 +6,7 @@ import { MemberEntity } from '../Entity/member.entity'
 import { YTDPointEntity } from '../Entity/ytdpoint.entity'
 import { LifetimePointAggregateRoot } from '../AggregateRoot/lifetimepoint.aggregateroot'
 
-export class MemberPoint {
+export class MemberPointService {
 	protected memberRepo: MemberRepositoryInterface
 	protected YTDRepo: YTDPointRepositoryInterface
 	protected LifetimeRepo: LifetimePointRepositoryInterface
@@ -23,6 +23,9 @@ export class MemberPoint {
 		this.memberRepo = memberRepo
 		this.YTDRepo = YTDRepo
 		this.LifetimeRepo = LifetimeRepo
+
+		this.YTDPoints = []
+		this.LifetimePoints = []
 	}
 
 	public async save () {
