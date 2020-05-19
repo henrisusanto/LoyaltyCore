@@ -3,6 +3,7 @@ import { LifetimePointUsageEntity, LifetimePointUsageJSON } from '../Entity/life
 interface LifetimePointJSON {
 	Id: number
 	Member: number
+	MemberPoint: number
 	Activity: string
 	Reference: number
 	Amount: number
@@ -16,6 +17,7 @@ interface LifetimePointJSON {
 export class LifetimePointAggregateRoot {
 	protected Id: number
 	protected Member: number
+	protected MemberPoint: number
 	protected Activity: string
 	protected Reference: number
 	protected Amount: number
@@ -32,8 +34,9 @@ export class LifetimePointAggregateRoot {
 		})
 	}
 
-	public create (Member: number, Activity: string, Reference: number, Amount: number, Remarks: string): void {
+	public create (Member: number, MemberPoint: number, Activity: string, Reference: number, Amount: number, Remarks: string): void {
 		this.Member = Member
+		this.MemberPoint = MemberPoint
 		this.Activity = Activity
 		this.Reference = Reference
 		this.Amount = Amount
@@ -71,6 +74,7 @@ export class LifetimePointAggregateRoot {
 		newUsage.create ({
 			Id: undefined,
 			Member: this.Member,
+			MemberPoint: this.MemberPoint,
 			Activity,
 			Reference,
 			LifetimeId: this.Id,
@@ -85,6 +89,7 @@ export class LifetimePointAggregateRoot {
 	public fromJSON (data: LifetimePointJSON) {
 		this.Id = data.Id
 		this.Member = data.Member
+		this.MemberPoint = data.MemberPoint
 		this.Activity = data.Activity
 		this.Reference = data.Reference
 		this.Amount = data.Amount
@@ -109,6 +114,7 @@ export class LifetimePointAggregateRoot {
 		let json: LifetimePointJSON = {
 			Id: this.Id,
 			Member: this.Member,
+			MemberPoint: this.MemberPoint,
 			Activity: this.Activity,
 			Reference: this.Reference,
 			Amount: this.Amount,

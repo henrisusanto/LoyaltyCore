@@ -1,6 +1,7 @@
 export interface LifetimePointUsageJSON {
 	Id?: number
 	Member: number
+	MemberPoint: number
 	Activity: string
 	Reference: number
 	LifetimeId: number
@@ -11,6 +12,7 @@ export interface LifetimePointUsageJSON {
 export class LifetimePointUsageEntity {
 	protected Id?: number
 	protected Member: number
+	protected MemberPoint: number
 	protected Activity: string
 	protected Reference: number
 	protected LifetimeId: number
@@ -28,6 +30,7 @@ export class LifetimePointUsageEntity {
 	public create (data: LifetimePointUsageJSON): void {
 		this.Id = data.Id
 		this.Member = data.Member
+		this.MemberPoint = data.MemberPoint
 		this.Activity = data.Activity
 		this.Reference = data.Reference
 		this.LifetimeId = data.LifetimeId
@@ -38,6 +41,7 @@ export class LifetimePointUsageEntity {
 	public fromJSON (data: LifetimePointUsageJSON): void {
 		this.Id = data.Id
 		this.Member = data.Member
+		this.MemberPoint = data.MemberPoint
 		this.Activity = data.Activity
 		this.Reference = data.Reference
 		this.LifetimeId = data.LifetimeId
@@ -49,6 +53,7 @@ export class LifetimePointUsageEntity {
 		return {
 			Id: this.Id,
 			Member: this.Member,
+			MemberPoint: this.MemberPoint,
 			Activity: this.Activity,
 			Reference: this.Reference,
 			LifetimeId: this.LifetimeId,

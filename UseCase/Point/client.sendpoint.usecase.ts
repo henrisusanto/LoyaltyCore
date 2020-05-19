@@ -1,26 +1,19 @@
 import { ManualPointRepositoryInterface } from '../../RepositoryInterface/manualpoint.repositoryinterface'
-import { MemberRepositoryInterface } from '../../RepositoryInterface/member.repositoryinterface'
-import { YTDPointRepositoryInterface } from '../../RepositoryInterface/ytdpoint.repositoryinterface'
-import { LifetimePointRepositoryInterface } from '../../RepositoryInterface/lifetimepoint.repositoryinterface'
-import { MemberPointService } from '../../Service/memberpoint.service'
 import { ManualPointEntity } from '../../Entity/manualpoint.entity'
+
+import { MemberPointRepositoryInterface } from '../../RepositoryInterface/memberpoint.repositoryinterface'
+import { MemberPointEntity } from '../../Entity/memberpoint.entity'
 
 export class ClientSendPointUsecase {
 	protected manualPointRepo: ManualPointRepositoryInterface
-	protected memberRepo: MemberRepositoryInterface
-	protected YTDPointRepo: YTDPointRepositoryInterface
-	protected LifetimePointRepo: LifetimePointRepositoryInterface
+	protected memberPointRepo: MemberPointRepositoryInterface
 
 	constructor (
 		manualPointRepo: ManualPointRepositoryInterface,
-		memberRepo: MemberRepositoryInterface,
-		YTDPointRepo: YTDPointRepositoryInterface,
-		LifetimePointRepo: LifetimePointRepositoryInterface
+		memberPointRepo: MemberPointRepositoryInterface
 	) {
 		this.manualPointRepo = manualPointRepo
-		this.memberRepo = memberRepo
-		this.YTDPointRepo = YTDPointRepo
-		this.LifetimePointRepo = LifetimePointRepo
+		this.memberPointRepo= memberPointRepo
 	}
 
 	public async execute (
@@ -35,20 +28,47 @@ export class ClientSendPointUsecase {
 			let manual = new ManualPointEntity ()
 			manual.create (manualPointId, Member, YTD, Lifetime, LifetimeDateIn, Remarks)
 
-			let memberPoint = new MemberPointService (
-				this.memberRepo,
-				this.YTDPointRepo,
-				this.LifetimePointRepo
-			)
+			if (YTD && YTD < 0) {
+				if (Math.abs (YTD) > await this.memberPointRepo.getSUMYTDbyMember (Member)) {
+					throw new Error ('Insufficient YTD Point')
+				}
+			}
 
-			await memberPoint.setMember (Member)
-			if (YTD && YTD > 0) await memberPoint.addYTD (YTD, 'MANUAL_ADD', manualPointId, Remarks || '')
-			if (YTD && YTD < 0) await memberPoint.deductYTD (YTD, 'MANUAL_DEDUCT', manualPointId, Remarks || '')
+			if (Lifetime && Lifetime < 0) {
+				if (Math.abs (Lifetime) > await this.memberPointRepo.getSUMLifetimeByMember (Member)) {
+					throw new Error ('Insufficient Lifetime Point')
+				}
+			}
 
-			if (Lifetime && Lifetime > 0) await memberPoint.addLifetime (Lifetime, 'MANUAL_ADD', manualPointId, Remarks || '')
-			if (Lifetime && Lifetime < 0) await memberPoint.deductLifetime (Lifetime, 'MANUAL_DEDUCT', manualPointId, Remarks || '')
+			let points: MemberPointEntity[] = []
+			if (YTD) {
+				let point = new MemberPointEntity ()
+				point.create ({
+					Member,
+					PointType: 'YTD',
+					Amount: YTD,
+					Time: new Date (),
+					Activity: YTD > 0 ? 'MANUAL_ADD' : 'MANUAL_DEDUCT',
+					Reference: manualPointId,
+					Remarks: Remarks || ''
+				})
+				points.push (point)
+			}
+			if (Lifetime) {
+				let point = new MemberPointEntity ()
+				point.create ({
+					Member,
+					PointType: 'Lifetime',
+					Amount: Lifetime,
+					Time: LifetimeDateIn || new Date (),
+					Activity: Lifetime > 0 ? 'MANUAL_ADD' : 'MANUAL_DEDUCT',
+					Reference: manualPointId,
+					Remarks: Remarks || ''
+				})
+				points.push (point)
+			}
+			this.memberPointRepo.bulkInsert (points)
 
-			await memberPoint.save ()
 			return await this.manualPointRepo.insert (manual)
 		} catch (e) {
 			throw new Error (e)

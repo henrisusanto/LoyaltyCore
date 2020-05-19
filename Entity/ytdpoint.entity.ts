@@ -2,6 +2,7 @@
 export interface YTDPointJSON {
 	Id: number
 	Member: number
+	MemberPoint: number
 	Activity: string
 	Reference: number
 	Amount: number
@@ -11,6 +12,7 @@ export interface YTDPointJSON {
 
 export interface YTDPointCreate {
 	Member: number
+	MemberPoint: number
 	Activity: string
 	Reference: number
 	Amount: number
@@ -20,6 +22,7 @@ export interface YTDPointCreate {
 export class YTDPointEntity {
 	protected Id: number
 	protected Member: number
+	protected MemberPoint: number
 	protected Activity: string
 	protected Reference: number
 	protected Amount: number
@@ -28,6 +31,7 @@ export class YTDPointEntity {
 
 	public create (data: YTDPointCreate): void {
 		this.Member = data.Member
+		this.MemberPoint = data.MemberPoint
 		this.Activity = data.Activity
 		this.Reference = data.Reference
 		this.Amount = data.Amount
@@ -57,6 +61,7 @@ export class YTDPointEntity {
 		return {
 			Id: this.Id,
 			Member: this.Member,
+			MemberPoint: this.MemberPoint,
 			Activity: this.Activity,
 			Reference: this.Reference,
 			Amount: this.Amount,
