@@ -76,11 +76,11 @@ export class MemberEntity {
 		return this.Id
 	}
 
-	public addYTDPoint (point: number): void {
+	public submitYTDPoint (point: number): void {
 		this.YTDPoint += point
 	}
 
-	public addLifetimePoint (point: number) : void {
+	public submitLifetimePoint (point: number) : void {
 		this.LifetimePoint += point
 	}
 

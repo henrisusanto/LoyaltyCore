@@ -1,23 +1,23 @@
-import { DomainEvent } from './domainevent.staticclass'
-import { UpdateMemberPointEventHandlerInterface } from './EventHandlerInterface/updatememberpoint.eventhandlerinterface'
+// import { DomainEvent } from './domainevent.staticclass'
+// import { UpdateMemberPointEventHandlerInterface } from './EventHandlerInterface/updatememberpoint.eventhandlerinterface'
 
 export class LoyaltyCoreEventRegister {
 
-	protected updateMemberPointEventHandler: UpdateMemberPointEventHandlerInterface
+	// protected updateMemberPointEventHandler: UpdateMemberPointEventHandlerInterface
 
 	public constructor (
-		updateMemberPointEventHandler: UpdateMemberPointEventHandlerInterface
+		// updateMemberPointEventHandler: UpdateMemberPointEventHandlerInterface
 	) {
-		this.updateMemberPointEventHandler = updateMemberPointEventHandler
+		// this.updateMemberPointEventHandler = updateMemberPointEventHandler
 	}
 
 
 	public register () {
 
 		// after insert point, update member.point
-		DomainEvent.subscribe ('AfterInsertPoint', async (pointHeader) => {
+		// DomainEvent.subscribe ('AfterInsertPoint', async (pointHeader) => {
 			// this.updateMemberPointEventHandler.callUseCase (pointHeader)
-		})
+		// })
 
 	}
 
