@@ -65,13 +65,19 @@ export class PointService {
 
 	private async fifo (data: PointCreationFormat): Promise <boolean> {
 		try {
-			let UsageAmount = Math.abs (data.LifetimeAmount)
 			this.LifetimeEarns = await this.PointRepo.findLifetimeRemainingGreaterThan0SortByTime (data.Member)
 			var LTinIndex: number = 0
-			while (UsageAmount > 0) {
-				let UsageToSubmit: number = UsageAmount - this.LifetimeEarns[LTinIndex].getLifetimeRemaining()
-				this.LifetimeEarns[LTinIndex].use(UsageToSubmit < 1 ? UsageAmount : UsageToSubmit)
-				UsageAmount = UsageToSubmit
+			let walkingUsage = Math.abs(data.LifetimeAmount)
+			while (walkingUsage > 0) {
+				let pointUnit = this.LifetimeEarns[LTinIndex]
+				let unitRemaining = pointUnit.getLifetimeRemaining ()
+				if (walkingUsage > unitRemaining) {
+					pointUnit.use (unitRemaining)
+					walkingUsage -= unitRemaining
+				} else {
+					pointUnit.use (walkingUsage)
+					walkingUsage = 0
+				}
 				LTinIndex++
 			}
 			return true
