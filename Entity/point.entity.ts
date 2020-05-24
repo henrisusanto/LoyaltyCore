@@ -36,6 +36,14 @@ interface PointHistory {
 	Details: PointHistory []
 }
 
+interface PointReport {
+	Member: number
+	Time: Date
+	Activity: string
+	Amount: number
+	Remarks: string
+}
+
 export class PointEntity {
 	protected Id?: number
 	protected Parent?: number
@@ -114,6 +122,16 @@ export class PointEntity {
 			ExpiredDate: this.LifetimeExpiredDate,
 			Remarks: this.Remarks,
 			Details: []
+		}
+	}
+
+	public toReport (): PointReport {
+		return {
+			Member: this.Member,
+			Time: this.Time,
+			Activity: this.Activity,
+			Amount: Math.abs (this.LifetimeAmount),
+			Remarks: this.Remarks
 		}
 	}
 
