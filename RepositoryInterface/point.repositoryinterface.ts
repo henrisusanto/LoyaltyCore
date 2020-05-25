@@ -16,4 +16,5 @@ export interface PointRepositoryInterface {
 	findPointByParentIds (ParentIDs: number[]): Promise <PointEntity []>
 	findLifetimePointGreaterThan0SortByTime (parameter: PointReportParameter): Promise <{TotalRecord: number, TotalPoint: number, Result: PointEntity []}>
 	findLifetimePointLessThan0SortByTime (parameter: PointReportParameter): Promise <{TotalRecord: number, TotalPoint: number, Result: PointEntity []}>
+	getRemainingGT0ExpiredDateLTEtoday(): Promise <PointEntity []>
 }

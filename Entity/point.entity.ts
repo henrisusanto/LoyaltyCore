@@ -76,7 +76,10 @@ export class PointEntity {
 			else if (data.LifetimeExpiredDate) this.LifetimeExpiredDate = new Date (data.LifetimeExpiredDate)
 			else {
 				let Inserted = new Date (this.Time.toString ())
-				this.LifetimeExpiredDate = new Date(Inserted.setFullYear(Inserted.getFullYear() + 2))
+				Inserted.setFullYear(Inserted.getFullYear() + 2)
+				Inserted.setMonth(Inserted.getMonth() + 1)
+				Inserted.setDate(-1)
+				this.LifetimeExpiredDate = new Date(Inserted)
 			}
 		}
 
@@ -104,6 +107,10 @@ export class PointEntity {
 
 	public getLifetimeRemaining (): number {
 		return this.LifetimeRemaining
+	}
+
+	public getMember (): number {
+		return this.Member
 	}
 
 	public use (point: number): void {

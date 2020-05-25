@@ -63,6 +63,32 @@ export class PointService {
 		}
 	}
 
+	public expire (Member: MemberEntity, Points: PointEntity []): void {
+		this.LifetimeEarns = Points
+		this.Member = Member
+
+		var totalPointExp: number = 0
+		this.LifetimeEarns.forEach ( point => {
+			totalPointExp += point.getLifetimeRemaining ()
+			point.use (point.getLifetimeRemaining ())
+		})
+
+		totalPointExp *= -1
+
+		let usage = new PointEntity ()
+		usage.create ({
+			Member: this.Member.getId (),
+			Time: new Date (),
+			Activity: 'POINT_EXP',
+			Reference: 0,
+			YTDAmount: 0,
+			LifetimeAmount: totalPointExp,
+			Remarks: ''
+		})
+		this.LifetimeSpends.push (usage)
+		this.Member.submitLifetimePoint (totalPointExp)
+	}
+
 	private async fifo (data: PointCreationFormat): Promise <boolean> {
 		try {
 			this.LifetimeEarns = await this.PointRepo.findLifetimeRemainingGreaterThan0SortByTime (data.Member)
