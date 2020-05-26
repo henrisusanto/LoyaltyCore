@@ -4,11 +4,13 @@ export interface TierJSON {
 	 Id: number
 	 Name: string
 	 Year: number
+	 Level: number
 	 Qualifications: QualificationJSON []
 }
 
 export interface SimpleTierJSON {
-	Name: string,
+	Name: string
+	Level: number
 	Qualifications: SimpleQualificationJSON[]
 }
 
@@ -16,12 +18,14 @@ export class TierAggregateRoot {
 	protected Id: number
 	protected Name: string
 	protected Year: number
+	protected Level: number
 	protected Qualifications: QualificationValueObject[]
 
 	public createDraft (Id: number, Year: number, data: SimpleTierJSON) {
 		this.Id = Id
 		this.Year = Year
 		this.Name = data.Name
+		this.Level= data.Level
 		this.Qualifications = []
 
 		for (let daqu of data.Qualifications) {
@@ -35,6 +39,7 @@ export class TierAggregateRoot {
 		this.Id = data.Id
 		this.Name = data.Name
 		this.Year = data.Year
+		this.Level= data.Level
 		this.Qualifications = []
 		for (let q of data.Qualifications) {
 			let qe = new QualificationValueObject ()
@@ -48,6 +53,7 @@ export class TierAggregateRoot {
 			Id: this.Id,
 			Name: this.Name,
 			Year: this.Year,
+			Level: this.Level,
 			Qualifications: []
 		}
 		for (let qualification of this.Qualifications) {
@@ -63,6 +69,7 @@ export class TierAggregateRoot {
 		}
 		return {
 			Name: this.Name,
+			Level: this.Level,
 			Qualifications: simpleQualificationJSONs
 		}
 	}
