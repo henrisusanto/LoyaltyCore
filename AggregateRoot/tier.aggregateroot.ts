@@ -1,4 +1,4 @@
-import { QualificationValueObject, QualificationJSON, SimpleQualificationJSON } from '../ValueObject/qualification.valueobject'
+import { QualificationValueObject, QualificationJSON, SimpleQualificationJSON, QalificationCondition } from '../ValueObject/qualification.valueobject'
 
 export interface TierJSON {
 	 Id: number
@@ -12,6 +12,11 @@ export interface SimpleTierJSON {
 	Name: string
 	Level: number
 	Qualifications: SimpleQualificationJSON[]
+}
+
+export interface TierCondition {
+	OR: QalificationCondition[],
+	AND: {}
 }
 
 export class TierAggregateRoot {
@@ -33,6 +38,18 @@ export class TierAggregateRoot {
 			qualification.createDraft(this.Id, daqu)
 			this.Qualifications.push(qualification)
 		}
+	}
+
+	public getId (): number {
+		return this.Id
+	}
+
+	public getLevel (): number {
+		return this.Level
+	}
+
+	public getQualifications (): QualificationValueObject[] {
+		return this.Qualifications
 	}
 
 	public fromJSON (data: TierJSON): void {
@@ -71,6 +88,47 @@ export class TierAggregateRoot {
 			Name: this.Name,
 			Level: this.Level,
 			Qualifications: simpleQualificationJSONs
+		}
+	}
+
+	public toAdjustmentCriteria (): TierCondition {
+		return {
+			OR: this.Qualifications.map (q => {
+				return q.toMemberCriteria ()
+			}),
+			AND: {
+				Field: 'Tier',
+				Operator: '<>',
+				FieldValue: this.Id
+			}
+		}
+	}
+
+	public toDowngradeCriteria (): TierCondition {
+		return {
+			OR: this.Qualifications.map (q => {
+				let criteria = q.toMemberCriteria ()
+				criteria.Operator = '<'
+				return criteria
+			}),
+			AND: {
+				Field: 'Tier',
+				Operator: '=',
+				FieldValue: this.Id
+			}
+		}
+	}
+
+	public toUpgradeCriteria (LowerLevelTierIDs: number []) {
+		return {
+			OR: this.Qualifications.map (q => {
+				return q.toMemberCriteria ()
+			}),
+			AND: {
+				Field: 'Tier',
+				Operator: 'IN',
+				FieldValue: LowerLevelTierIDs
+			}
 		}
 	}
 

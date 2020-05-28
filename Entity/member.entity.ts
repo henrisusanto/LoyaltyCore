@@ -84,6 +84,18 @@ export class MemberEntity {
 		this.LifetimePoint += point
 	}
 
+	public getTier (): number {
+		return this.Tier
+	}
+
+	public setTier (history): void {
+		this.Tier = history.getNextTier ()
+	}
+
+	public getTierCalculationFieldValue (FieldName: string): number {
+		return this[FieldName]
+	}
+
 	public fromJSON (data: MemberJSON): void {
 		this.Id = data.Id
 		this.FullName = data.FullName

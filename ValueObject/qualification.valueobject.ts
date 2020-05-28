@@ -9,6 +9,12 @@ export interface SimpleQualificationJSON {
 	ThresholdValue: number
 }
 
+export interface QalificationCondition {
+	Field: string
+	Operator: string
+	FieldValue: number
+}
+
 export class QualificationValueObject {
 	protected Tier: number
 	protected MemberField: string
@@ -38,6 +44,14 @@ export class QualificationValueObject {
 		return {
 			MemberField: this.MemberField,
 			ThresholdValue: this.ThresholdValue
+		}
+	}
+
+	public toMemberCriteria (): QalificationCondition {
+		return {
+			Field: this.MemberField,
+			Operator: '>=',
+			FieldValue: this.ThresholdValue
 		}
 	}
 
