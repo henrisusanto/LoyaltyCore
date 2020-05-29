@@ -19,15 +19,21 @@ export class SchedulerDowngradeTierUsecase {
 		this.HistoryRepo = HistoryRepo
 	}
 
-	public async execute (Limit: number): Promise <boolean> {
+	public async execute (Limit: number): Promise <number> {
 		let Tiers = await this.TierRepo.findByYear (new Date ().getFullYear ())
 		let service = new TierService (this.MemberRepo, this.HistoryRepo, Tiers)
 		let criteria = service.getMemberDowngradeCriteria ()
 		let members = await this.MemberRepo.findForTierCalculation (criteria, Limit)
-		members.forEach (member => {
-			service.Downgrade (member)
+
+		let downgradeMembers = members.map(member => {
+			return service.Downgrade (member)
 		})
-		return true
+
+		return Promise.all(downgradeMembers).then(proccessed => {
+			return proccessed.filter (status => {
+				return true === status
+			}).length
+		})
 	}
 
 }
