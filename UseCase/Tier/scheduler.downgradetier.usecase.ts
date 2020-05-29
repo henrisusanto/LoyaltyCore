@@ -3,7 +3,7 @@ import { MemberRepositoryInterface } from '../../RepositoryInterface/member.repo
 import { TierHistoryRepositoryInterface } from '../../RepositoryInterface/tierhistory.repositoryinterface'
 import { TierService } from '../../Service/tier.service'
 
-export class SchedulerUpgradeTierUsecase {
+export class SchedulerDowngradeTierUsecase {
 
 	protected TierRepo: TierRepositoryInterface
 	protected MemberRepo: MemberRepositoryInterface
@@ -22,10 +22,10 @@ export class SchedulerUpgradeTierUsecase {
 	public async execute (Limit: number): Promise <boolean> {
 		let Tiers = await this.TierRepo.findByYear (new Date ().getFullYear ())
 		let service = new TierService (this.MemberRepo, this.HistoryRepo, Tiers)
-		let criteria = service.getMemberUpgradeCriteria ()
+		let criteria = service.getMemberDowngradeCriteria ()
 		let members = await this.MemberRepo.findForTierCalculation (criteria, Limit)
 		members.forEach (member => {
-			service.Upgrade (member)
+			service.Downgrade (member)
 		})
 		return true
 	}

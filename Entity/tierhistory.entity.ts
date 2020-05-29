@@ -35,8 +35,16 @@ export class TierHistoryEntity {
 		this.FieldValue = data.FieldValue
 	}
 
+	public getPreviousTier (): number {
+		return this.PreviousTier
+	}
+
 	public getNextTier (): number {
 		return this.NextTier
+	}
+
+	public getFieldValue (): number {
+		return this.FieldValue
 	}
 
 	public fromJSON (data: TierHistoryJSON) {

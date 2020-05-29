@@ -15,8 +15,8 @@ export interface SimpleTierJSON {
 }
 
 export interface TierCondition {
-	OR: QalificationCondition[],
-	AND: {}
+	OR: {}[],
+	AND: {}[]
 }
 
 export class TierAggregateRoot {
@@ -91,45 +91,36 @@ export class TierAggregateRoot {
 		}
 	}
 
-	public toAdjustmentCriteria (): TierCondition {
-		return {
-			OR: this.Qualifications.map (q => {
-				return q.toMemberCriteria ()
-			}),
-			AND: {
-				Field: 'Tier',
-				Operator: '<>',
-				FieldValue: this.Id
-			}
-		}
-	}
-
 	public toDowngradeCriteria (): TierCondition {
-		return {
-			OR: this.Qualifications.map (q => {
-				let criteria = q.toMemberCriteria ()
-				criteria.Operator = '<'
-				return criteria
-			}),
-			AND: {
-				Field: 'Tier',
-				Operator: '=',
-				FieldValue: this.Id
-			}
-		}
+		let OR: {}[] = []
+
+		let AND: {}[] = this.Qualifications.map (q => {
+			let criteria = q.toMemberCriteria ()
+			criteria.Operator = '<'
+			return criteria
+		})
+
+		AND.push ({
+			Field: 'Tier',
+			Operator: '=',
+			FieldValue: this.Id
+		})
+
+		return { OR, AND }
 	}
 
 	public toUpgradeCriteria (LowerLevelTierIDs: number []) {
-		return {
-			OR: this.Qualifications.map (q => {
-				return q.toMemberCriteria ()
-			}),
-			AND: {
-				Field: 'Tier',
-				Operator: 'IN',
-				FieldValue: LowerLevelTierIDs
-			}
-		}
+		let OR: {}[] = this.Qualifications.map (q => {
+			return q.toMemberCriteria ()
+		})
+
+		let AND: {}[] = [{
+			Field: 'Tier',
+			Operator: 'IN',
+			FieldValue: LowerLevelTierIDs
+		}]
+
+		return { OR, AND }
 	}
 
 }

@@ -21,19 +21,12 @@ export class TierService {
 		this.Tiers = Tiers
 	}
 
-	public getMemberAdjustmentCriteria () {
-		return {
-			OR: this.Tiers.map (tier => {
-				return tier.toAdjustmentCriteria ()
-			})
-		}
-	}
-
 	public getMemberDowngradeCriteria () {
+		var bottomTier = this.getBottomTier ()
 		return {
 			OR: this.Tiers
 			.filter (tier => {
-				return tier != this.getTopTier ()
+				return tier != bottomTier
 			})
 			.map (tier => {
 				return tier.toDowngradeCriteria ()
@@ -42,10 +35,11 @@ export class TierService {
 	}
 
 	public getMemberUpgradeCriteria () {
+		var bottomTier = this.getBottomTier ()
 		return {
 			OR: this.Tiers
 			.filter (tier => {
-				return tier != this.getBottomTier ()
+				return tier != bottomTier
 			})
 			.map (tier => {
 				let LowerLevelTierIDs: number [] = this.Tiers
@@ -60,24 +54,19 @@ export class TierService {
 		}
 	}
 
-	public async Adjust (Member: MemberEntity): Promise <boolean> {
-		let History = this.generateHistory (Member)
-		return await this.save (Member, History)
-	}
-
 	public async Upgrade (Member: MemberEntity): Promise <boolean> {
-		let History = this.generateHistory (Member)
+		let history = this.generateHistory (Member)
 		let currentLevel = this.getTierLevelById (Member.getTier ())
-		let nextLevel = this.getTierLevelById (History.getNextTier ())
-		if ( currentLevel < nextLevel ) return await this.save (Member, History)
+		let nextLevel = this.getTierLevelById (history.getNextTier ())
+		if ( currentLevel < nextLevel ) return await this.save (Member, history)
 		else return false
 	}
 
 	public async Downgrade (Member: MemberEntity): Promise <boolean> {
-		let History = this.generateHistory (Member)
+		let history = this.generateHistory (Member)
 		let currentLevel = this.getTierLevelById (Member.getTier ())
-		let nextLevel = this.getTierLevelById (History.getNextTier ())
-		if ( currentLevel > nextLevel ) return await this.save (Member, History)
+		let nextLevel = this.getTierLevelById (history.getNextTier ())
+		if ( currentLevel > nextLevel ) return await this.save (Member, history)
 		else return false
 	}
 
@@ -105,14 +94,16 @@ export class TierService {
 		proposedHistories.sort ((historyA, historyB) => {
 			return this.getTierLevelById (historyB.getNextTier ()) - this.getTierLevelById (historyA.getNextTier ())
 		})
+		var proposedTierId = proposedHistories[0].getNextTier()
+		var chosenHistories= proposedHistories
+		.filter(history => {
+			return history.getNextTier () === proposedTierId
+		})
+		.sort ((historyA, historyB) => {
+			return historyB.getFieldValue () - historyA.getFieldValue ()
+		})
 
-		return proposedHistories[0]
-	}
-
-	private getTopTier (): TierAggregateRoot {
-		return this.Tiers.sort ((a,b) => {
-			return b.getLevel () - a.getLevel ()
-		})[0]
+		return chosenHistories[0]
 	}
 
 	private getBottomTier (): TierAggregateRoot {
