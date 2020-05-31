@@ -16,35 +16,42 @@ export class SchedulerExpirePoints {
 		this.MemberRepo = MemberRepo
 	}
 
-	public async execute (): Promise <boolean> {
+	public async execute (Limit: number): Promise <number> {
 		try {
-			let Expireds = await this.PointRepo.getRemainingGT0ExpiredDateLTEtoday ()
-			let IDs: number [] = Expireds
-				.map (point => point.getMember ())
-	  		.filter ((value, index, self) => self.indexOf(value) === index)
+			let ExpiredCriteria = {
+				AND: [
+					{
+						Field: 'LifetimeRemaining',
+						Operator: '>',
+						FieldValue: 0
+					},
+					{
+						Field: 'LifetimeExpiredDate',
+						Operator: '<=',
+						FieldValue: 'CURRENT_DATE()'
+					},
+				]
+			}
 
-	  	var MemberPromises: Promise <MemberEntity> [] = []
-	  	IDs.forEach (id => {
-	  		MemberPromises.push (this.MemberRepo.findOne (id))
-	  	})
+			let MemberIDs = await this.PointRepo.getDistinctMemberExpiredPoint (Limit, ExpiredCriteria)
+			if (MemberIDs.length < 1) return 0
+			let Points = await this.PointRepo.getExpiredByMembers (MemberIDs, ExpiredCriteria)
+			let Members = await this.MemberRepo.findByIDs (MemberIDs)
+			var Deferred: Promise <void>[] = []
+			Members.forEach (member => {
+				let expireds= Points.filter (point => point.getMember () === member.getId ())
+				if (expireds.length > 0) {
+					let service = new PointService (this.MemberRepo, this.PointRepo)
+					service.expire (member, expireds)
+					Deferred.push (service.save ())
+				}
+			})
 
-	  	Promise.all(MemberPromises).then(Members => {
-		  	var Services: PointService[] = []
-		  	Members.forEach (member => {
-					let expireds= Expireds.filter (point => point.getMember () === member.getId ())
-					if (expireds.length > 0) {
-						let service = new PointService (this.MemberRepo, this.PointRepo)
-						service.expire (member, expireds)
-						Services.push (service)
-					}
-		  	})
-
-				Services.forEach(service => {
-					service.save ()
-				})
-	  	})
-
-			return true
+			return Promise
+			.all(Deferred)
+			.then(() => {
+				return Deferred.length
+			})
 		} catch (e) {
 			throw new Error (e)
 		}

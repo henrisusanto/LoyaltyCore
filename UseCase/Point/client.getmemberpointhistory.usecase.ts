@@ -10,23 +10,30 @@ export class ClientGetMemberPointHistory {
 	}
 
 	public async execute (Member: number) {
-		let parents = await this.repository.findLifetimeGreaterThan0HasNoParentSortByTime (Member)
-		let parentIDs = parents.map (parent => {
-			return parent.getId ()
+		let criteria = 
+		{
+			Parent: '= 0',
+			Member: `= ${Member}`,
+		}
+
+		var parents = await this.repository.findHistory (criteria)
+		criteria.Parent = '<> 0'
+		var childs = await this.repository.findHistory (criteria)
+
+		parents.sort ((a, b) => {
+			return a.getTime ().getTime() - b.getTime ().getTime ()
 		})
-		let childs = await this.repository.findPointByParentIds (parentIDs)
 
 		let result = parents.map(parent => {
-			return parent.toHistory ()
-		})
-
-		result.forEach (res => {
-			childs.filter (child => {
-				return child.getParent() === res.Id
-			})
-			.forEach (child => {
-				res.Details.push (child.toHistory ())
-			})
+			let history = parent.toHistory ()
+			history.Details = childs
+				.filter (child => {
+					return parent.getId () === child.getParent ()
+				})
+				.map (child => {
+					return child.toHistory ()
+				})
+				return history
 		})
 
 		return result

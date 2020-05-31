@@ -113,6 +113,10 @@ export class PointEntity {
 		return this.Member
 	}
 
+	public getTime (): Date {
+		return this.Time
+	}
+
 	public use (point: number): void {
 		this.LifetimeRemaining -= Math.abs(point)
 		this.HasChanges = true

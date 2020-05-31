@@ -13,5 +13,6 @@ export interface MemberRepositoryInterface {
 	save (data: MemberEntity): Promise <number>;
 	findAll (parameters: MemberListParameter): Promise <MemberEntity[]>;
 	findOne (id: number): Promise <MemberEntity>;
+  findByIDs (Id: number []): Promise <MemberEntity []>
 	findForTierCalculation (parameters, limit: number): Promise <MemberEntity[]>;
 }
