@@ -97,12 +97,11 @@ export class PointEntity {
 		return this.Parent || 0
 	}
 
-	public getLifetimeAmount (): number {
-		return this.LifetimeAmount
-	}
-
-	public getYTDAmount (): number {
-		return this.YTDAmount
+	public getPointToSubmit (): { Lifetime: number, YTD: number } {
+		return {
+			Lifetime: this.LifetimeAmount,
+			YTD: this.YTDAmount
+		}
 	}
 
 	public getLifetimeRemaining (): number {

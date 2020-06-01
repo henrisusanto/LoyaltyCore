@@ -8,7 +8,7 @@ export interface PointReportParameter {
 }
 
 export interface PointRepositoryInterface {
-	findLifetimeRemainingGreaterThan0SortByTime (Member: number): Promise <PointEntity []>
+	findPointToUse (parameter: {}): Promise <PointEntity []>
 	findHistory (criteria: {}): Promise <PointEntity []>
 	bulkSave (points: PointEntity []): Promise <number []>
 	findLifetimePointGreaterThan0SortByTime (parameter: PointReportParameter): Promise <{TotalRecord: number, TotalPoint: number, Result: PointEntity []}>

@@ -37,8 +37,7 @@ export class PointService {
 			let point = new PointEntity ()
 			point.create (data)
 			this.LifetimeEarns.push (point)
-			this.Member.submitLifetimePoint (point.getLifetimeAmount ())
-			this.Member.submitYTDPoint (point.getYTDAmount ())
+			this.Member.submitPoint (point)
 		} catch (e) {
 			throw new Error (e)
 		}
@@ -54,11 +53,15 @@ export class PointService {
 			point.create (data)
 
 			this.Member = await this.MemberRepo.findOne (data.Member)
-			this.Member.submitYTDPoint (point.getYTDAmount ())
-			this.Member.submitLifetimePoint (point.getLifetimeAmount ())
+			this.Member.submitPoint (point)
 
-			this.LifetimeEarns = await this.PointRepo.findLifetimeRemainingGreaterThan0SortByTime (data.Member)
-			this.fifo (data)
+			let criteria = {
+				Member: `= ${this.Member.getId ()}`,
+				LifetimeRemaining: '> 0'
+			}
+			this.LifetimeEarns = await this.PointRepo.findPointToUse (criteria)
+			await this.fifo (data)
+
 			this.LifetimeSpends.push (point)
 
 		} catch (e) {
@@ -90,29 +93,35 @@ export class PointService {
 				Remarks: ''
 			})
 			this.LifetimeSpends.push (usage)
-			this.Member.submitLifetimePoint (usage.getLifetimeAmount ())
+			this.Member.submitPoint (usage)
 		} catch (e) {
 			throw new Error (e)
 		}
 	}
 
-	private fifo (data: PointCreationFormat): Promise <boolean> {
+	private async fifo (data: PointCreationFormat): Promise <void[]> {
 		try {
+
+			this.LifetimeEarns.sort ((a, b) => {
+				return a.getTime().getTime() - b.getTime().getTime()
+			})
+
 			var LTinIndex: number = 0
 			let walkingUsage = Math.abs(data.LifetimeAmount)
+			var deferred: void[] = []
 			while (walkingUsage > 0) {
 				let pointUnit = this.LifetimeEarns[LTinIndex]
 				let unitRemaining = pointUnit.getLifetimeRemaining ()
 				if (walkingUsage > unitRemaining) {
-					pointUnit.use (unitRemaining)
+					deferred.push (pointUnit.use (unitRemaining))
 					walkingUsage -= unitRemaining
 				} else {
-					pointUnit.use (walkingUsage)
+					deferred.push (pointUnit.use (walkingUsage))
 					walkingUsage = 0
 				}
 				LTinIndex++
 			}
-			return true
+			return Promise.all(deferred)
 		} catch (e) { 
 			throw new Error (e)
 		}

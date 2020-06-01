@@ -76,14 +76,14 @@ export class MemberEntity {
 		return this.Id
 	}
 
-	public submitYTDPoint (point: number): void {
-		if (point < 0 && this.YTDPoint + point < 0) throw new Error ('Insufficient YTD Point')
-		else this.YTDPoint += point
-	}
+	public submitPoint (PointEntity): void {
+		let { Lifetime, YTD } = PointEntity.getPointToSubmit ()
 
-	public submitLifetimePoint (point: number) : void {
-		if (point < 0 && this.LifetimePoint + point < 0) throw new Error ('Insufficient Lifetime Point')
-		else this.LifetimePoint += point
+		if (YTD < 0 && this.YTDPoint + YTD < 0) throw new Error ('Insufficient YTD Point')
+		else this.YTDPoint += YTD
+
+		if (Lifetime < 0 && this.LifetimePoint + Lifetime < 0) throw new Error ('Insufficient Lifetime Point')
+		else this.LifetimePoint += Lifetime
 	}
 
 	public getTier (): number {
@@ -91,7 +91,8 @@ export class MemberEntity {
 	}
 
 	public setTier (history): void {
-		this.Tier = history.getNextTier ()
+		if (this.Tier !== history.getPreviousTier ()) throw new Error ('Current tier not match')
+		else this.Tier = history.getNextTier ()
 	}
 
 	public getTierCalculationFieldValue (FieldName: string): number {
