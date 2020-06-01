@@ -33,7 +33,8 @@ export class PointService {
 			data.LifetimeAmount = Math.abs (data.LifetimeAmount)
 			data.YTDAmount = Math.abs (data.YTDAmount)
 
-			this.Member = await this.MemberRepo.findOne (data.Member)
+			this.Member = await this.MemberRepo.findActiveMemberById (data.Member)
+
 			let point = new PointEntity ()
 			point.create (data)
 			this.LifetimeEarns.push (point)
@@ -52,7 +53,7 @@ export class PointService {
 			let point = new PointEntity ()
 			point.create (data)
 
-			this.Member = await this.MemberRepo.findOne (data.Member)
+			this.Member = await this.MemberRepo.findActiveMemberById (data.Member)
 			this.Member.submitPoint (point)
 
 			let criteria = {
