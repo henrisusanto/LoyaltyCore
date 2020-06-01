@@ -8,8 +8,6 @@ export interface PointReportParameter {
 }
 
 export interface PointRepositoryInterface {
-	SummarizeYTDPointByMember (Member: number): Promise <number>
-	SummarizeLifetimePointByMember (Member: number): Promise <number>
 	findLifetimeRemainingGreaterThan0SortByTime (Member: number): Promise <PointEntity []>
 	findHistory (criteria: {}): Promise <PointEntity []>
 	bulkSave (points: PointEntity []): Promise <number []>

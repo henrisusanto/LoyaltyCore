@@ -29,69 +29,75 @@ export class PointService {
 	}
 
 	public async earn (data: PointCreationFormat): Promise <void> {
-		data.LifetimeAmount = Math.abs (data.LifetimeAmount)
-		data.YTDAmount = Math.abs (data.YTDAmount)
+		try {
+			data.LifetimeAmount = Math.abs (data.LifetimeAmount)
+			data.YTDAmount = Math.abs (data.YTDAmount)
 
-		this.Member = await this.MemberRepo.findOne (data.Member)
-		let point = new PointEntity ()
-		point.create (data)
-		this.LifetimeEarns.push (point)
-		this.Member.submitLifetimePoint (point.getLifetimeAmount ())
-		this.Member.submitYTDPoint (point.getYTDAmount ())
-	}
-
-	public async spend (data: PointCreationFormat): Promise <void> {
-		data.LifetimeAmount = data.LifetimeAmount > 0 ? data.LifetimeAmount * -1 : data.LifetimeAmount
-		data.YTDAmount = data.YTDAmount > 0 ? data.YTDAmount * -1 : data.YTDAmount
-
-		if (data.YTDAmount !== 0) {
-			let YTDAvailable = await this.PointRepo.SummarizeYTDPointByMember (data.Member)
-			if (Math.abs (data.YTDAmount) > YTDAvailable) throw new Error ('Insufficient YTD Points')
-		}
-		if (data.LifetimeAmount !== 0) {
-			let LifetimeAvailable = await this.PointRepo.SummarizeLifetimePointByMember (data.Member)
-			if (Math.abs (data.LifetimeAmount) > LifetimeAvailable) throw new Error ('Insufficient Lifetime Points')
-		}
-
-		if (await this.fifo (data)) {
 			this.Member = await this.MemberRepo.findOne (data.Member)
 			let point = new PointEntity ()
 			point.create (data)
 			this.LifetimeEarns.push (point)
 			this.Member.submitLifetimePoint (point.getLifetimeAmount ())
 			this.Member.submitYTDPoint (point.getYTDAmount ())
+		} catch (e) {
+			throw new Error (e)
+		}
+	}
+
+	public async spend (data: PointCreationFormat): Promise <void> {
+		try {
+
+			data.LifetimeAmount = data.LifetimeAmount > 0 ? data.LifetimeAmount * -1 : data.LifetimeAmount
+			data.YTDAmount = data.YTDAmount > 0 ? data.YTDAmount * -1 : data.YTDAmount
+
+			let point = new PointEntity ()
+			point.create (data)
+
+			this.Member = await this.MemberRepo.findOne (data.Member)
+			this.Member.submitYTDPoint (point.getYTDAmount ())
+			this.Member.submitLifetimePoint (point.getLifetimeAmount ())
+
+			this.LifetimeEarns = await this.PointRepo.findLifetimeRemainingGreaterThan0SortByTime (data.Member)
+			this.fifo (data)
+			this.LifetimeSpends.push (point)
+
+		} catch (e) {
+			throw new Error (e)
 		}
 	}
 
 	public expire (Member: MemberEntity, Points: PointEntity []): void {
-		this.LifetimeEarns = Points
-		this.Member = Member
+		try {
+			this.LifetimeEarns = Points
+			this.Member = Member
 
-		var totalPointExp: number = 0
-		this.LifetimeEarns.forEach ( point => {
-			totalPointExp += point.getLifetimeRemaining ()
-			point.use (point.getLifetimeRemaining ())
-		})
+			var totalPointExp: number = 0
+			this.LifetimeEarns.forEach ( point => {
+				totalPointExp += point.getLifetimeRemaining ()
+				point.use (point.getLifetimeRemaining ())
+			})
 
-		totalPointExp *= -1
+			totalPointExp *= -1
 
-		let usage = new PointEntity ()
-		usage.create ({
-			Member: this.Member.getId (),
-			Time: new Date (),
-			Activity: 'POINT_EXP',
-			Reference: 0,
-			YTDAmount: 0,
-			LifetimeAmount: totalPointExp,
-			Remarks: ''
-		})
-		this.LifetimeSpends.push (usage)
-		this.Member.submitLifetimePoint (totalPointExp)
+			let usage = new PointEntity ()
+			usage.create ({
+				Member: this.Member.getId (),
+				Time: new Date (),
+				Activity: 'POINT_EXP',
+				Reference: 0,
+				YTDAmount: 0,
+				LifetimeAmount: totalPointExp,
+				Remarks: ''
+			})
+			this.LifetimeSpends.push (usage)
+			this.Member.submitLifetimePoint (usage.getLifetimeAmount ())
+		} catch (e) {
+			throw new Error (e)
+		}
 	}
 
-	private async fifo (data: PointCreationFormat): Promise <boolean> {
+	private fifo (data: PointCreationFormat): Promise <boolean> {
 		try {
-			this.LifetimeEarns = await this.PointRepo.findLifetimeRemainingGreaterThan0SortByTime (data.Member)
 			var LTinIndex: number = 0
 			let walkingUsage = Math.abs(data.LifetimeAmount)
 			while (walkingUsage > 0) {

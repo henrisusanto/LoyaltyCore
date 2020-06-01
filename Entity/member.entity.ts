@@ -77,11 +77,13 @@ export class MemberEntity {
 	}
 
 	public submitYTDPoint (point: number): void {
-		this.YTDPoint += point
+		if (point < 0 && this.YTDPoint + point < 0) throw new Error ('Insufficient YTD Point')
+		else this.YTDPoint += point
 	}
 
 	public submitLifetimePoint (point: number) : void {
-		this.LifetimePoint += point
+		if (point < 0 && this.LifetimePoint + point < 0) throw new Error ('Insufficient Lifetime Point')
+		else this.LifetimePoint += point
 	}
 
 	public getTier (): number {
