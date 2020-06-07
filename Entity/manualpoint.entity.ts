@@ -7,6 +7,15 @@ export interface ManualPointJSON {
 	Remarks?: string
 }
 
+interface ManualPointFactory {
+	Id: number
+	Member: number
+	YTD?: number
+	Lifetime?: number
+	LifetimeDateIn?: Date
+	Remarks?: string
+}
+
 export class ManualPointEntity {
 
 	protected Id: number
@@ -16,17 +25,17 @@ export class ManualPointEntity {
 	protected LifetimeDateIn?: Date
 	protected Remarks?: string
 
-	public create (Id: number, Member: number, YTD?: number, Lifetime?: number, LifetimeDateIn?: Date, Remarks?: string) {
-		this.Id = Id
-		this.Member = Member
-		this.YTD = YTD || 0
-		this.Lifetime = Lifetime || 0
+	public create (data: ManualPointFactory) {
+		this.Id = data.Id
+		this.Member = data.Member
+		this.YTD = data.YTD
+		this.Lifetime = data.Lifetime
 
-		if (LifetimeDateIn instanceof Date) this.LifetimeDateIn = LifetimeDateIn
-		else if (LifetimeDateIn) this.LifetimeDateIn = new Date (LifetimeDateIn)
+		if (data.LifetimeDateIn instanceof Date) this.LifetimeDateIn = data.LifetimeDateIn
+		else if (data.LifetimeDateIn) this.LifetimeDateIn = new Date (data.LifetimeDateIn)
 		else this.LifetimeDateIn = new Date ()
 
-		this.Remarks = Remarks || ''
+		this.Remarks = data.Remarks
 	}
 
 	public toJSON (): ManualPointJSON {

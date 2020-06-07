@@ -1,19 +1,22 @@
 import { PointRepositoryInterface } from '../../RepositoryInterface/point.repositoryinterface'
 import { MemberRepositoryInterface } from '../../RepositoryInterface/member.repositoryinterface'
+import { ActivityRateRepositoryInterface } from '../../RepositoryInterface/activityrate.repositoryinterface'
 import { PointService } from '../../Service/point.service'
-import { MemberEntity } from '../../Entity/member.entity'
 
 export class SchedulerExpirePoints {
 
 	protected PointRepo: PointRepositoryInterface
 	protected MemberRepo: MemberRepositoryInterface
+	protected RateRepo: ActivityRateRepositoryInterface
 
 	constructor (
 		PointRepo: PointRepositoryInterface,
-		MemberRepo: MemberRepositoryInterface
+		MemberRepo: MemberRepositoryInterface,
+		RateRepo: ActivityRateRepositoryInterface
 	) {
 		this.PointRepo = PointRepo
 		this.MemberRepo = MemberRepo
+		this.RateRepo = RateRepo
 	}
 
 	public async execute (Limit: number): Promise <number> {
@@ -35,23 +38,20 @@ export class SchedulerExpirePoints {
 
 			let MemberIDs = await this.PointRepo.getDistinctMemberExpiredPoint (Limit, ExpiredCriteria)
 			if (MemberIDs.length < 1) return 0
-			let Points = await this.PointRepo.getExpiredByMembers (MemberIDs, ExpiredCriteria)
-			let Members = await this.MemberRepo.findByIDs (MemberIDs)
-			var Deferred: Promise <void>[] = []
-			Members.forEach (member => {
-				let expireds= Points.filter (point => point.getMember () === member.getId ())
-				if (expireds.length > 0) {
-					let service = new PointService (this.MemberRepo, this.PointRepo)
-					service.expire (member, expireds)
-					Deferred.push (service.save ())
+
+			var Points = await this.PointRepo.getExpiredByMembers (MemberIDs, ExpiredCriteria)
+			var Members = await this.MemberRepo.findByIDs (MemberIDs)
+			var Rate = await this.RateRepo.findByCode ('EXPIRED')
+
+			Members.forEach (async Member => {
+				let Expireds= Points.filter (point => point.getMember () === Member.getId ())
+				if (Expireds.length > 0) {
+					let service = new PointService (this.MemberRepo, this.PointRepo, this.RateRepo)
+					await service.expire (Member, Expireds, Rate)
 				}
 			})
 
-			return Promise
-			.all(Deferred)
-			.then(() => {
-				return Deferred.length
-			})
+			return Members.length
 		} catch (e) {
 			throw new Error (e)
 		}

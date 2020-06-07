@@ -77,7 +77,8 @@ export class MemberEntity {
 	}
 
 	public submitPoint (PointEntity): void {
-		let { Lifetime, YTD } = PointEntity.getPointToSubmit ()
+		if (!this.Status) throw new Error ('Member Inactive')
+		let { Lifetime, YTD } = PointEntity.getPointAmount ()
 
 		if (YTD < 0 && this.YTDPoint + YTD < 0) throw new Error ('Insufficient YTD Point')
 		else this.YTDPoint += YTD
@@ -91,6 +92,7 @@ export class MemberEntity {
 	}
 
 	public setTier (history): void {
+		if (!this.Status) throw new Error ('Member Inactive')
 		if (this.Tier !== history.getPreviousTier ()) throw new Error ('Current tier not match')
 		else this.Tier = history.getNextTier ()
 	}

@@ -10,7 +10,7 @@ export interface PointReportParameter {
 export interface PointRepositoryInterface {
 	findPointToUse (parameter: {}): Promise <PointEntity []>
 	findHistory (criteria: {}): Promise <PointEntity []>
-	bulkSave (points: PointEntity []): Promise <number []>
+	save (points: PointEntity): Promise <number>
 	findLifetimePointGreaterThan0SortByTime (parameter: PointReportParameter): Promise <{TotalRecord: number, TotalPoint: number, Result: PointEntity []}>
 	findLifetimePointLessThan0SortByTime (parameter: PointReportParameter): Promise <{TotalRecord: number, TotalPoint: number, Result: PointEntity []}>
 	getDistinctMemberExpiredPoint (Limit: number, ExpiredCriteria: {}): Promise <number []>

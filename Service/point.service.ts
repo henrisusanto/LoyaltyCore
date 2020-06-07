@@ -1,117 +1,98 @@
 import { MemberRepositoryInterface } from '../RepositoryInterface/member.repositoryinterface'
 import { PointRepositoryInterface } from '../RepositoryInterface/point.repositoryinterface'
+import { ActivityRateRepositoryInterface } from '../RepositoryInterface/activityrate.repositoryinterface'
 
-import { PointEntity, PointCreationFormat } from '../Entity/point.entity'
+import { PointEntity,  } from '../Entity/point.entity'
 import { MemberEntity } from '../Entity/member.entity'
+import { ActivityRateEntity } from '../Entity/activityrate.entity'
 
 export class PointService {
 	protected MemberRepo: MemberRepositoryInterface
 	protected PointRepo: PointRepositoryInterface
+	protected RateRepo: ActivityRateRepositoryInterface
 
-	protected Member: MemberEntity
-	protected LifetimeEarns: PointEntity []
-	protected LifetimeSpends: PointEntity []
-
-	constructor (MemberRepo: MemberRepositoryInterface, PointRepo: PointRepositoryInterface) {
+	constructor (MemberRepo: MemberRepositoryInterface, PointRepo: PointRepositoryInterface, RateRepo: ActivityRateRepositoryInterface) {
 		this.MemberRepo = MemberRepo
 		this.PointRepo = PointRepo
-		this.LifetimeEarns = []
-		this.LifetimeSpends= []
+		this.RateRepo = RateRepo
 	}
 
-	public async save (): Promise <void> {
-		await this.MemberRepo.save (this.Member)
-		this.LifetimeEarns = this.LifetimeEarns.filter (point => {
+	public async save (Member: MemberEntity, Points: PointEntity []): Promise <number []> {
+		var Deferred: Promise <number>[] = []
+		Deferred.push (this.MemberRepo.save (Member))
+		let Changed = Points.filter (point => {
 			return point.HasChanges
+		}).forEach (point => {
+			Deferred.push (this.PointRepo.save (point))
 		})
-		await this.PointRepo.bulkSave (this.LifetimeEarns)
-		await this.PointRepo.bulkSave (this.LifetimeSpends)
+		return Promise.all (Deferred)
 	}
 
-	public async earn (data: PointCreationFormat): Promise <void> {
+	public async earn (data: { Member: number, RawAmount: number, ActivityCode: string, Reference: number, Parent?: number }): Promise <number []> {
 		try {
-			data.LifetimeAmount = Math.abs (data.LifetimeAmount)
-			data.YTDAmount = Math.abs (data.YTDAmount)
+			let { Member, RawAmount, ActivityCode, Reference, Parent } = data
+			let Rate = await this.RateRepo.findByCode (ActivityCode)
 
-			this.Member = await this.MemberRepo.findActiveMemberById (data.Member)
+			let Point = new PointEntity ()
+			Point.createPointEarning ({
+				Member,
+				RawAmount,
+				Rate,
+				Reference,
+				Parent
+			})
 
-			let point = new PointEntity ()
-			point.create (data)
-			this.LifetimeEarns.push (point)
-			this.Member.submitPoint (point)
+			let MemberEntity = await this.MemberRepo.findOne (Member)
+			MemberEntity.submitPoint (Point)
+
+			return await this.save (MemberEntity, [Point])
 		} catch (e) {
 			throw new Error (e)
 		}
 	}
 
-	public async spend (data: PointCreationFormat): Promise <void> {
+	public async spend (data: { Member: number, RawAmount: number, ActivityCode: string, Reference: number }): Promise <number []> {
 		try {
+			let { Member, RawAmount, ActivityCode, Reference } = data
+			let Rate = await this.RateRepo.findByCode (ActivityCode)
 
-			data.LifetimeAmount = data.LifetimeAmount > 0 ? data.LifetimeAmount * -1 : data.LifetimeAmount
-			data.YTDAmount = data.YTDAmount > 0 ? data.YTDAmount * -1 : data.YTDAmount
+			let PointUsage = new PointEntity ()
+			PointUsage.createPointSpending ({
+				Member,
+				RawAmount,
+				Rate,
+				Reference
+			})
 
-			let point = new PointEntity ()
-			point.create (data)
+			let MemberEntity = await this.MemberRepo.findOne (Member)
+			MemberEntity.submitPoint (PointUsage)
 
-			this.Member = await this.MemberRepo.findActiveMemberById (data.Member)
-			this.Member.submitPoint (point)
-
-			let criteria = {
-				Member: `= ${this.Member.getId ()}`,
+			let PointRemains = await this.PointRepo.findPointToUse ({
+				Member: `= ${Member}`,
 				LifetimeRemaining: '> 0'
-			}
-			this.LifetimeEarns = await this.PointRepo.findPointToUse (criteria)
-			await this.fifo (data)
-
-			this.LifetimeSpends.push (point)
-
-		} catch (e) {
-			throw new Error (e)
-		}
-	}
-
-	public expire (Member: MemberEntity, Points: PointEntity []): void {
-		try {
-			this.LifetimeEarns = Points
-			this.Member = Member
-
-			var totalPointExp: number = 0
-			this.LifetimeEarns.forEach ( point => {
-				totalPointExp += point.getLifetimeRemaining ()
-				point.use (point.getLifetimeRemaining ())
 			})
-
-			totalPointExp *= -1
-
-			let usage = new PointEntity ()
-			usage.create ({
-				Member: this.Member.getId (),
-				Time: new Date (),
-				Activity: 'POINT_EXP',
-				Reference: 0,
-				YTDAmount: 0,
-				LifetimeAmount: totalPointExp,
-				Remarks: ''
-			})
-			this.LifetimeSpends.push (usage)
-			this.Member.submitPoint (usage)
-		} catch (e) {
-			throw new Error (e)
-		}
-	}
-
-	private async fifo (data: PointCreationFormat): Promise <void[]> {
-		try {
-
-			this.LifetimeEarns.sort ((a, b) => {
+			PointRemains.sort ((a, b) => {
 				return a.getTime().getTime() - b.getTime().getTime()
 			})
 
+			await this.fifo (PointUsage, PointRemains)
+
+			let Points = PointRemains
+			Points.push (PointUsage)
+			return await this.save (MemberEntity, Points)
+		} catch (e) {
+			throw new Error (e)
+		}
+	}
+
+	private async fifo (usage: PointEntity, remains: PointEntity []): Promise <void[]> {
+		try {
 			var LTinIndex: number = 0
-			let walkingUsage = Math.abs(data.LifetimeAmount)
+			let { Lifetime } = usage.getPointAmount ()
+			let walkingUsage = Math.abs(Lifetime)
 			var deferred: void[] = []
 			while (walkingUsage > 0) {
-				let pointUnit = this.LifetimeEarns[LTinIndex]
+				let pointUnit = remains[LTinIndex]
 				let unitRemaining = pointUnit.getLifetimeRemaining ()
 				if (walkingUsage > unitRemaining) {
 					deferred.push (pointUnit.use (unitRemaining))
@@ -124,6 +105,68 @@ export class PointService {
 			}
 			return Promise.all(deferred)
 		} catch (e) { 
+			throw new Error (e)
+		}
+	}
+
+	public async expire (Member: MemberEntity, Expireds: PointEntity [], Rate: ActivityRateEntity): Promise <number[]> {
+		try {
+			var RawAmount: number = 0
+			Expireds.forEach ( point => {
+				RawAmount += point.getLifetimeRemaining ()
+				point.use (point.getLifetimeRemaining ())
+			})
+
+			RawAmount *= -1
+
+			let Usage = new PointEntity ()
+			Usage.createPointExpirer ({
+				Member: Member.getId (),
+				RawAmount,
+				Rate
+			})
+
+			Member.submitPoint (Usage)
+			let Points = Expireds
+			Points.push (Usage)
+
+			return await this.save (Member, Points)
+		} catch (e) {
+			throw new Error (e)
+		}
+	}
+
+	public async manual (data: {Member: MemberEntity, Rate: ActivityRateEntity, ManualId: number, YTD: number, Lifetime: number, Time ?: Date, Remarks ?: string}): Promise <number []> {
+		try {
+			let { Member, Rate, ManualId, YTD, Lifetime, Time, Remarks } = data
+			let Point = new PointEntity
+			Point.createPointManual ({
+				Member: Member.getId (),
+				YTD,
+				Lifetime,
+				Rate,
+				ManualId,
+				Time,
+				Remarks
+			})
+			Member.submitPoint (Point)
+
+			let Points: PointEntity[] = []
+			if (Lifetime < 0) {
+				let PointRemains = await this.PointRepo.findPointToUse ({
+					Member: `= ${Member.getId ()}`,
+					LifetimeRemaining: '> 0'
+				})
+				PointRemains.sort ((a, b) => {
+					return a.getTime().getTime() - b.getTime().getTime()
+				})
+				await this.fifo (Point, PointRemains)
+				Points = PointRemains
+			}
+			Points.push (Point)
+
+			return await this.save (Member, Points)
+		} catch (e) {
 			throw new Error (e)
 		}
 	}

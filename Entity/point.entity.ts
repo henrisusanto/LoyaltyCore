@@ -1,14 +1,4 @@
-export interface PointCreationFormat {
-	Parent?: number
-	Member: number
-	Time: Date
-	Activity: string
-	Reference: number
-	YTDAmount: number
-	LifetimeAmount: number
-	LifetimeExpiredDate?: Date
-	Remarks: string
-}
+import { ActivityRateEntity } from './activityrate.entity'
 
 export interface PointJSON {
 	Id: number
@@ -22,6 +12,38 @@ export interface PointJSON {
 	LifetimeRemaining: number
 	LifetimeExpiredDate: Date
 	Remarks: string
+	Rate: number
+}
+
+interface PointEarning {
+	Member: number
+	RawAmount: number
+	Rate: ActivityRateEntity
+	Reference: number
+	Parent?: number
+}
+
+interface PointSpending {
+	Member: number
+	RawAmount: number
+	Rate: ActivityRateEntity
+	Reference: number
+}
+
+interface PointManual {
+	Member: number
+	YTD: number
+	Lifetime: number
+	Rate: ActivityRateEntity
+	ManualId: number
+	Time?: Date
+	Remarks?: string
+}
+
+interface PointExpirer {
+	Member: number
+	RawAmount: number
+	Rate: ActivityRateEntity
 }
 
 interface PointHistory {
@@ -56,36 +78,90 @@ export class PointEntity {
 	protected LifetimeRemaining: number
 	protected LifetimeExpiredDate: Date
 	protected Remarks: string
+	protected Rate: number
 	public HasChanges: boolean
 
-	public create (data: PointCreationFormat): void {
+	public createPointEarning (data: PointEarning): void {
 		this.Parent = data.Parent
+		this.Member = data.Member
+		this.Reference = data.Reference
+
+		let { Code, Rate, ExpiredMonth } = data.Rate.toPoint ()
+		let PointAmount = data.RawAmount / Rate
+
+		this.Activity = Code
+		this.Rate = Rate
+		this.YTDAmount = PointAmount
+		this.LifetimeAmount = PointAmount
+		this.LifetimeRemaining = PointAmount
+
+		this.Time = new Date ()
+		let ExpiredDate = new Date ()
+		ExpiredDate.setMonth (ExpiredDate.getMonth() + ExpiredMonth + 1)
+		ExpiredDate.setDate (-1)
+		this.LifetimeExpiredDate = new Date(ExpiredDate)
+
+		this.HasChanges = true
+	}
+
+	public createPointSpending (data: PointSpending): void {
+		this.Member = data.Member
+		this.Reference = data.Reference
+
+		this.Time = new Date ()
+
+		let { Code, Rate, ExpiredMonth } = data.Rate.toPoint ()
+		this.Activity = Code
+		this.Rate = Rate
+
+		let PointAmount = data.RawAmount / Rate
+		if (PointAmount > 0) PointAmount *= -1
+		this.LifetimeAmount = PointAmount
+
+		this.HasChanges = true
+	}
+
+	public createPointManual (data: PointManual): void {
 		this.Member = data.Member
 
 		if (data.Time instanceof Date) this.Time = data.Time
 		else if (data.Time) this.Time = new Date (data.Time)
 		else this.Time = new Date ()
 
-		this.Activity = data.Activity
-		this.Reference = data.Reference
-		this.YTDAmount = data.YTDAmount
-		this.LifetimeAmount = data.LifetimeAmount
+		let { Code, Rate, ExpiredMonth } = data.Rate.toPoint ()
+		data.YTD /= Rate
+		data.Lifetime /= Rate
+		this.Activity = Code
+		this.Rate = Rate
 
-		if (this.LifetimeAmount > 0) {
-			if (data.LifetimeExpiredDate instanceof Date) this.LifetimeExpiredDate = data.LifetimeExpiredDate
-			else if (data.LifetimeExpiredDate) this.LifetimeExpiredDate = new Date (data.LifetimeExpiredDate)
-			else {
-				let Inserted = new Date (this.Time.toString ())
-				Inserted.setFullYear(Inserted.getFullYear() + 2)
-				Inserted.setMonth(Inserted.getMonth() + 1)
-				Inserted.setDate(-1)
-				this.LifetimeExpiredDate = new Date(Inserted)
-			}
+		this.Reference = data.ManualId
+		this.YTDAmount = data.YTD
+		this.LifetimeAmount = data.Lifetime
+
+		if (data.Lifetime > 0) {
+			this.LifetimeRemaining = data.Lifetime
+
+			let Inserted = new Date (this.Time.toString ())
+			Inserted.setMonth (Inserted.getMonth() + ExpiredMonth + 1)
+			Inserted.setDate (-1)
+			this.LifetimeExpiredDate = new Date (Inserted)
 		}
 
-		this.Remarks = data.Remarks
+		this.Remarks = data.Remarks || ''
+		this.HasChanges = true
+	}
 
-		if (this.LifetimeAmount > 0) this.LifetimeRemaining = this.LifetimeAmount
+	public createPointExpirer (data: PointExpirer): void {
+		this.Member = data.Member
+		this.Time = new Date ()
+
+		let { Code, Rate, ExpiredMonth } = data.Rate.toPoint ()
+		let PointAmount = data.RawAmount / Rate
+		if (PointAmount > 0) PointAmount *= -1
+		this.Activity = Code
+		this.Rate = Rate
+
+		this.LifetimeAmount = PointAmount
 		this.HasChanges = true
 	}
 
@@ -97,7 +173,7 @@ export class PointEntity {
 		return this.Parent || 0
 	}
 
-	public getPointToSubmit (): { Lifetime: number, YTD: number } {
+	public getPointAmount (): { Lifetime: number, YTD: number } {
 		return {
 			Lifetime: this.LifetimeAmount,
 			YTD: this.YTDAmount
@@ -173,7 +249,8 @@ export class PointEntity {
 			LifetimeAmount: this.LifetimeAmount,
 			LifetimeRemaining: this.LifetimeRemaining,
 			LifetimeExpiredDate: this.LifetimeExpiredDate,
-			Remarks: this.Remarks
+			Remarks: this.Remarks,
+			Rate: this.Rate
 		}
 	}
 
