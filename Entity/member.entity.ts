@@ -76,6 +76,10 @@ export class MemberEntity {
 		return this.Id
 	}
 
+	public getFullName (): string {
+		return this.FullName
+	}
+
 	public submitPoint (PointEntity): void {
 		if (!this.Status) throw new Error ('Member Inactive')
 		let { Lifetime, YTD } = PointEntity.getPointAmount ()

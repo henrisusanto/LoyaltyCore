@@ -197,11 +197,11 @@ export class PointEntity {
 		this.HasChanges = true
 	}
 
-	public toHistory (): PointHistory {
+	public toHistory (Rates): PointHistory {
 		return {
 			Id: this.Id,
 			Time: this.Time,
-			Activity: this.Activity,
+			Activity: Rates[this.Activity],
 			Reference: this.Reference,
 			Amount: this.LifetimeAmount,
 			Remaining: this.LifetimeRemaining,
@@ -211,11 +211,11 @@ export class PointEntity {
 		}
 	}
 
-	public toReport (): PointReport {
+	public toReport (Rates, Members): PointReport {
 		return {
-			Member: this.Member,
+			Member: Members[this.Member],
 			Time: this.Time,
-			Activity: this.Activity,
+			Activity: Rates[this.Activity],
 			Amount: Math.abs (this.LifetimeAmount),
 			Remarks: this.Remarks
 		}
