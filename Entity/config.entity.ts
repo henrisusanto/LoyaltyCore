@@ -19,6 +19,10 @@ export class ConfigEntity {
 		this.ConfigValue = value
 	}
 
+	public getConfigValue (): string {
+		return this.ConfigValue
+	}
+
 	public fromJSON (data: ConfigJSON): void {
 		this.Id = data.Id
 		this.Name = data.Name
