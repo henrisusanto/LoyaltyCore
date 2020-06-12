@@ -81,6 +81,7 @@ export class MemberEntity {
 	}
 
 	public submitPoint (PointEntity): void {
+		if (PointEntity.getMember () !== this.Id) throw new Error ('Invalid point assignment')
 		if (!this.Status) throw new Error ('Member Inactive')
 		let { Lifetime, YTD } = PointEntity.getPointAmount ()
 
@@ -89,6 +90,13 @@ export class MemberEntity {
 
 		if (Lifetime < 0 && this.LifetimePoint + Lifetime < 0) throw new Error ('Insufficient Lifetime Point')
 		else this.LifetimePoint += Lifetime
+	}
+
+	public submitSpending (trx): void {
+		if (trx.getMember () !== this.Id) throw new Error ('Invalid spending assignment')
+		if (trx.getSpending () > 0 && !this.Status) throw new Error ('Member Inactive')
+		this.YTDSpending += trx.getSpending ()
+		this.LifetimeSpending += trx.getSpending ()
 	}
 
 	public getTier (): number {

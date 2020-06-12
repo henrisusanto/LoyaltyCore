@@ -165,6 +165,20 @@ export class PointEntity {
 		this.HasChanges = true
 	}
 
+	public createPointCancel (pointToCancel): void {
+		let { YTD, Lifetime } = pointToCancel.getPointAmount ()
+		let Remaining = pointToCancel.getLifetimeRemaining ()
+		if (YTD === Lifetime === Remaining) {}
+		else throw new Error ('Point Already used')
+
+		this.Member = pointToCancel.getMember ()
+		this.Time = new Date ()
+		this.Reference = pointToCancel.getId ()
+		this.YTDAmount = YTD * -1
+		this.LifetimeAmount = Lifetime * -1
+		this.HasChanges = false
+	}
+
 	public getId (): number {
 		return this.Id || 0
 	}

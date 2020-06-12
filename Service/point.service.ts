@@ -171,4 +171,19 @@ export class PointService {
 		}
 	}
 
+	public async cancel (data: {Reference: number, Activity: string}):Promise <boolean> {
+		try {
+			let PointToCancel = await this.PointRepo.findByReference (data)
+			let Canceler = new PointEntity ()
+			Canceler.createPointCancel (PointToCancel)
+			let Member = await this.MemberRepo.findOne (PointToCancel.getMember ())
+			Member.submitPoint (Canceler)
+
+			await this.PointRepo.delete (PointToCancel.getId ())
+			await this.MemberRepo.save (Member)
+			return true
+		} catch (e) {
+			throw new Error (e)
+		}
+	}
 }

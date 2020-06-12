@@ -15,4 +15,6 @@ export interface PointRepositoryInterface {
 	findLifetimePointLessThan0SortByTime (parameter: PointReportParameter): Promise <{TotalRecord: number, TotalPoint: number, Result: PointEntity []}>
 	getDistinctMemberExpiredPoint (Limit: number, ExpiredCriteria: {}): Promise <number []>
 	getExpiredByMembers (Member: number [], ExpiredCriteria: {}): Promise <PointEntity []>
+	findByReference (data: {Reference: number, Activity: string}): Promise <PointEntity>
+	delete (Id: number): Promise <boolean>
 }
