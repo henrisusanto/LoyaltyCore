@@ -95,8 +95,9 @@ export class MemberEntity {
 	public submitSpending (trx): void {
 		if (trx.getMember () !== this.Id) throw new Error ('Invalid spending assignment')
 		if (trx.getSpending () > 0 && !this.Status) throw new Error ('Member Inactive')
-		this.YTDSpending += trx.getSpending ()
-		this.LifetimeSpending += trx.getSpending ()
+		let spending = trx.getSpending ()
+		this.YTDSpending += spending
+		this.LifetimeSpending += spending
 	}
 
 	public getTier (): number {
@@ -111,6 +112,25 @@ export class MemberEntity {
 
 	public getTierCalculationFieldValue (FieldName: string): number {
 		return this[FieldName]
+	}
+
+	public toReport (Tier): MemberJSON {
+		return {
+			Id: this.Id,
+			FullName: this.FullName,
+			Email: this.Email,
+			PhoneNumber: this.PhoneNumber,
+			Status: this.Status,
+			RegisterDate: this.RegisterDate,
+			DateOfBirth: this.DateOfBirth,
+			Tier: Tier.getName (),
+			LifetimePoint: this.LifetimePoint,
+			YTDPoint: this.YTDPoint,
+			LifetimeVisit: this.LifetimeVisit,
+			YTDVisit: this.YTDVisit,
+			LifetimeSpending: this.LifetimeSpending,
+			YTDSpending: this.YTDSpending
+		}
 	}
 
 	public fromJSON (data: MemberJSON): void {

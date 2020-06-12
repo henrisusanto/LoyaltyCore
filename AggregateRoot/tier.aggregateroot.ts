@@ -44,6 +44,10 @@ export class TierAggregateRoot {
 		return this.Id
 	}
 
+	public getName (): string {
+		return this.Name
+	}
+
 	public getLevel (): number {
 		return this.Level
 	}

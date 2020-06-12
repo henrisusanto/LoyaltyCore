@@ -6,4 +6,5 @@ export interface TierRepositoryInterface {
 	findByYear (year: number): Promise <TierAggregateRoot[]>;
 	deleteByYear (year: number): Promise <void>;
 	deleteQualifications (TierId: number): Promise <void>;
+	findById (Id: number): Promise <TierAggregateRoot>;
 }
