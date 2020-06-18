@@ -1,17 +1,17 @@
 import { MemberRepositoryInterface } from '../RepositoryInterface/member.repositoryinterface'
 import { PointRepositoryInterface } from '../RepositoryInterface/point.repositoryinterface'
-import { ActivityRateRepositoryInterface } from '../RepositoryInterface/activityrate.repositoryinterface'
+import { PointTypeRepositoryInterface } from '../RepositoryInterface/pointtype.repositoryinterface'
 
 import { PointEntity,  } from '../Entity/point.entity'
 import { MemberEntity } from '../Entity/member.entity'
-import { ActivityRateEntity } from '../Entity/activityrate.entity'
+import { PointTypeEntity } from '../Entity/pointtype.entity'
 
 export class PointService {
 	protected MemberRepo: MemberRepositoryInterface
 	protected PointRepo: PointRepositoryInterface
-	protected RateRepo: ActivityRateRepositoryInterface
+	protected RateRepo: PointTypeRepositoryInterface
 
-	constructor (MemberRepo: MemberRepositoryInterface, PointRepo: PointRepositoryInterface, RateRepo: ActivityRateRepositoryInterface) {
+	constructor (MemberRepo: MemberRepositoryInterface, PointRepo: PointRepositoryInterface, RateRepo: PointTypeRepositoryInterface) {
 		this.MemberRepo = MemberRepo
 		this.PointRepo = PointRepo
 		this.RateRepo = RateRepo
@@ -109,7 +109,7 @@ export class PointService {
 		}
 	}
 
-	public async expire (Member: MemberEntity, Expireds: PointEntity [], Rate: ActivityRateEntity): Promise <number[]> {
+	public async expire (Member: MemberEntity, Expireds: PointEntity [], Rate: PointTypeEntity): Promise <number[]> {
 		try {
 			var RawAmount: number = 0
 			Expireds.forEach ( point => {
@@ -136,7 +136,7 @@ export class PointService {
 		}
 	}
 
-	public async manual (data: {Member: MemberEntity, Rate: ActivityRateEntity, ManualId: number, YTD: number, Lifetime: number, Time ?: Date, Remarks ?: string}): Promise <number []> {
+	public async manual (data: {Member: MemberEntity, Rate: PointTypeEntity, ManualId: number, YTD: number, Lifetime: number, Time ?: Date, Remarks ?: string}): Promise <number []> {
 		try {
 			let { Member, Rate, ManualId, YTD, Lifetime, Time, Remarks } = data
 			let Point = new PointEntity

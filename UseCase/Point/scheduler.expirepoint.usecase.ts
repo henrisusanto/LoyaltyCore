@@ -1,18 +1,18 @@
 import { PointRepositoryInterface } from '../../RepositoryInterface/point.repositoryinterface'
 import { MemberRepositoryInterface } from '../../RepositoryInterface/member.repositoryinterface'
-import { ActivityRateRepositoryInterface } from '../../RepositoryInterface/activityrate.repositoryinterface'
+import { PointTypeRepositoryInterface } from '../../RepositoryInterface/pointtype.repositoryinterface'
 import { PointService } from '../../Service/point.service'
 
 export class SchedulerExpirePoints {
 
 	protected PointRepo: PointRepositoryInterface
 	protected MemberRepo: MemberRepositoryInterface
-	protected RateRepo: ActivityRateRepositoryInterface
+	protected RateRepo: PointTypeRepositoryInterface
 
 	constructor (
 		PointRepo: PointRepositoryInterface,
 		MemberRepo: MemberRepositoryInterface,
-		RateRepo: ActivityRateRepositoryInterface
+		RateRepo: PointTypeRepositoryInterface
 	) {
 		this.PointRepo = PointRepo
 		this.MemberRepo = MemberRepo

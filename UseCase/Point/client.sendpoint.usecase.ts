@@ -3,7 +3,7 @@ import { ManualPointEntity } from '../../Entity/manualpoint.entity'
 
 import { MemberRepositoryInterface } from '../../RepositoryInterface/member.repositoryinterface'
 import { PointRepositoryInterface } from '../../RepositoryInterface/point.repositoryinterface'
-import { ActivityRateRepositoryInterface } from '../../RepositoryInterface/activityrate.repositoryinterface'
+import { PointTypeRepositoryInterface } from '../../RepositoryInterface/pointtype.repositoryinterface'
 import { PointService } from '../../Service/point.service'
 
 export class ClientSendPointUsecase {
@@ -11,13 +11,13 @@ export class ClientSendPointUsecase {
 	protected ManualRepo: ManualPointRepositoryInterface
 	protected MemberRepo: MemberRepositoryInterface
 	protected PointRepo: PointRepositoryInterface
-	protected RateRepo: ActivityRateRepositoryInterface
+	protected RateRepo: PointTypeRepositoryInterface
 
 	constructor (
 		ManualRepo: ManualPointRepositoryInterface,
 		MemberRepo: MemberRepositoryInterface,
 		PointRepo: PointRepositoryInterface,
-		RateRepo: ActivityRateRepositoryInterface
+		RateRepo: PointTypeRepositoryInterface
 	) {
 		this.ManualRepo = ManualRepo
 		this.MemberRepo = MemberRepo

@@ -1,4 +1,4 @@
-import { ActivityRateEntity } from './activityrate.entity'
+import { PointTypeEntity } from './pointtype.entity'
 
 export interface PointJSON {
 	Id: number
@@ -18,7 +18,7 @@ export interface PointJSON {
 interface PointEarning {
 	Member: number
 	RawAmount: number
-	Rate: ActivityRateEntity
+	Rate: PointTypeEntity
 	Reference: number
 	Parent?: number
 }
@@ -26,7 +26,7 @@ interface PointEarning {
 interface PointSpending {
 	Member: number
 	RawAmount: number
-	Rate: ActivityRateEntity
+	Rate: PointTypeEntity
 	Reference: number
 }
 
@@ -34,7 +34,7 @@ interface PointManual {
 	Member: number
 	YTD: number
 	Lifetime: number
-	Rate: ActivityRateEntity
+	Rate: PointTypeEntity
 	ManualId: number
 	Time?: Date
 	Remarks?: string
@@ -43,7 +43,7 @@ interface PointManual {
 interface PointExpirer {
 	Member: number
 	RawAmount: number
-	Rate: ActivityRateEntity
+	Rate: PointTypeEntity
 }
 
 interface PointHistory {

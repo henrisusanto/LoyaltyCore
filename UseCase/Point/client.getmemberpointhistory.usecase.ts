@@ -1,13 +1,13 @@
 import { PointRepositoryInterface } from '../../RepositoryInterface/point.repositoryinterface'
-import { ActivityRateRepositoryInterface } from '../../RepositoryInterface/activityrate.repositoryinterface'
+import { PointTypeRepositoryInterface } from '../../RepositoryInterface/pointtype.repositoryinterface'
 import { PointEntity } from '../../Entity/point.entity'
 
 export class ClientGetMemberPointHistory {
 
 	protected repository: PointRepositoryInterface
-	protected rateRepo: ActivityRateRepositoryInterface
+	protected rateRepo: PointTypeRepositoryInterface
 
-	constructor (repository: PointRepositoryInterface, rateRepo: ActivityRateRepositoryInterface) {
+	constructor (repository: PointRepositoryInterface, rateRepo: PointTypeRepositoryInterface) {
 		this.repository = repository
 		this.rateRepo = rateRepo
 	}

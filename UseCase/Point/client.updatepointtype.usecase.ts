@@ -1,14 +1,14 @@
-import { ActivityRateRepositoryInterface } from '../../RepositoryInterface/activityrate.repositoryinterface'
-import { ActivityRateEntity, ActivityRateJSON } from '../../Entity/activityrate.entity'
+import { PointTypeRepositoryInterface } from '../../RepositoryInterface/pointtype.repositoryinterface'
+import { PointTypeEntity, PointTypeJSON } from '../../Entity/pointtype.entity'
 
-export class ClientUpdateActivityRateUseCase {
+export class ClientUpdatePointTypeUseCase {
 	protected repository
 
-	constructor (repo: ActivityRateRepositoryInterface) {
+	constructor (repo: PointTypeRepositoryInterface) {
 		this.repository = repo
 	}
 
-  public async execute (data: ActivityRateJSON[]): Promise <void []> {
+  public async execute (data: PointTypeJSON[]): Promise <void []> {
     try {
 
       var Deferred: Promise <void>[] = []

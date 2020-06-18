@@ -1,16 +1,16 @@
 import { PointRepositoryInterface, PointReportParameter } from '../../RepositoryInterface/point.repositoryinterface'
-import { ActivityRateRepositoryInterface } from '../../RepositoryInterface/activityrate.repositoryinterface'
+import { PointTypeRepositoryInterface } from '../../RepositoryInterface/pointtype.repositoryinterface'
 import { MemberRepositoryInterface } from '../../RepositoryInterface/member.repositoryinterface'
 import { PointEntity  } from '../../Entity/point.entity'
 
 export class ClientGetRedeemedReport {
 	protected repo: PointRepositoryInterface
-	protected rateRepo: ActivityRateRepositoryInterface
+	protected rateRepo: PointTypeRepositoryInterface
 	protected memberRepo: MemberRepositoryInterface
 
 	public constructor (
 		repo: PointRepositoryInterface,
-		rateRepo: ActivityRateRepositoryInterface,
+		rateRepo: PointTypeRepositoryInterface,
 		memberRepo: MemberRepositoryInterface
 	) {
 		this.repo = repo

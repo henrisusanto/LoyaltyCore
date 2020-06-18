@@ -1,10 +1,10 @@
-import { ActivityRateRepositoryInterface } from '../../RepositoryInterface/activityrate.repositoryinterface'
-import { ActivityRateEntity } from '../../Entity/activityrate.entity'
+import { PointTypeRepositoryInterface } from '../../RepositoryInterface/pointtype.repositoryinterface'
+import { PointTypeEntity } from '../../Entity/pointtype.entity'
 
-export class ClientGetActivityRateUseCase {
+export class ClientGetPointTypeUseCase {
 	protected repository
 
-	constructor (repo: ActivityRateRepositoryInterface) {
+	constructor (repo: PointTypeRepositoryInterface) {
 		this.repository = repo
 	}
 

@@ -1,4 +1,4 @@
-export interface ActivityRateJSON {
+export interface PointTypeJSON {
 	Code: string
 	Description: string
 	Rate: number
@@ -16,13 +16,13 @@ interface PointHistory {
 	Description: string
 }
 
-export class ActivityRateEntity {
+export class PointTypeEntity {
 	protected Code: string
 	protected Description: string
 	protected Rate: number
 	protected ExpiredMonth: number
 
-	public update (data: ActivityRateJSON) {
+	public update (data: PointTypeJSON) {
 		this.Description = data.Description
 		this.Rate = data.Rate
 		this.ExpiredMonth = data.ExpiredMonth
@@ -47,7 +47,7 @@ export class ActivityRateEntity {
 		}
 	}
 
-	public toJSON (): ActivityRateJSON {
+	public toJSON (): PointTypeJSON {
 		return {
 			Code: this.Code,
 			Description: this.Description,
@@ -56,7 +56,7 @@ export class ActivityRateEntity {
 		}
 	}
 
-	public fromJSON (data: ActivityRateJSON): void {
+	public fromJSON (data: PointTypeJSON): void {
 		this.Code = data.Code
 		this.Description = data.Description
 		this.Rate = data.Rate
