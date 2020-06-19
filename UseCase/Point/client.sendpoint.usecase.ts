@@ -11,18 +11,18 @@ export class ClientSendPointUsecase {
 	protected ManualRepo: ManualPointRepositoryInterface
 	protected MemberRepo: MemberRepositoryInterface
 	protected PointRepo: PointRepositoryInterface
-	protected RateRepo: PointTypeRepositoryInterface
+	protected PointTypeRepo: PointTypeRepositoryInterface
 
 	constructor (
 		ManualRepo: ManualPointRepositoryInterface,
 		MemberRepo: MemberRepositoryInterface,
 		PointRepo: PointRepositoryInterface,
-		RateRepo: PointTypeRepositoryInterface
+		PointTypeRepo: PointTypeRepositoryInterface
 	) {
 		this.ManualRepo = ManualRepo
 		this.MemberRepo = MemberRepo
 		this.PointRepo = PointRepo
-		this.RateRepo = RateRepo
+		this.PointTypeRepo = PointTypeRepo
 	}
 
 	public async execute (Member: number, YTD ?: number, Lifetime ?: number, LifetimeDateIn ?: Date, Remarks ?: string): Promise <number> {
@@ -42,10 +42,10 @@ export class ClientSendPointUsecase {
 			let service = new PointService (
 				this.MemberRepo,
 				this.PointRepo,
-				this.RateRepo
+				this.PointTypeRepo
 			)
 			let MemberEntity = await this.MemberRepo.findOne (Member)
-			let Rate = await this.RateRepo.findByCode ('MANUAL')
+			let Rate = await this.PointTypeRepo.findByCode ('MANUAL')
 
 			await service.manual ({
 				Member: MemberEntity,

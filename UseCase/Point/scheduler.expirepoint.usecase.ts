@@ -7,16 +7,16 @@ export class SchedulerExpirePoints {
 
 	protected PointRepo: PointRepositoryInterface
 	protected MemberRepo: MemberRepositoryInterface
-	protected RateRepo: PointTypeRepositoryInterface
+	protected PointTypeRepo: PointTypeRepositoryInterface
 
 	constructor (
 		PointRepo: PointRepositoryInterface,
 		MemberRepo: MemberRepositoryInterface,
-		RateRepo: PointTypeRepositoryInterface
+		PointTypeRepo: PointTypeRepositoryInterface
 	) {
 		this.PointRepo = PointRepo
 		this.MemberRepo = MemberRepo
-		this.RateRepo = RateRepo
+		this.PointTypeRepo = PointTypeRepo
 	}
 
 	public async execute (Limit: number): Promise <number> {
@@ -41,12 +41,12 @@ export class SchedulerExpirePoints {
 
 			var Points = await this.PointRepo.getExpiredByMembers (MemberIDs, ExpiredCriteria)
 			var Members = await this.MemberRepo.findByIDs (MemberIDs)
-			var Rate = await this.RateRepo.findByCode ('EXPIRED')
+			var Rate = await this.PointTypeRepo.findByCode ('EXPIRED')
 
 			Members.forEach (async Member => {
 				let Expireds= Points.filter (point => point.getMember () === Member.getId ())
 				if (Expireds.length > 0) {
-					let service = new PointService (this.MemberRepo, this.PointRepo, this.RateRepo)
+					let service = new PointService (this.MemberRepo, this.PointRepo, this.PointTypeRepo)
 					await service.expire (Member, Expireds, Rate)
 				}
 			})

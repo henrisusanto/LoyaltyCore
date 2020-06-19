@@ -9,12 +9,12 @@ import { PointTypeEntity } from '../Entity/pointtype.entity'
 export class PointService {
 	protected MemberRepo: MemberRepositoryInterface
 	protected PointRepo: PointRepositoryInterface
-	protected RateRepo: PointTypeRepositoryInterface
+	protected PointTypeRepo: PointTypeRepositoryInterface
 
-	constructor (MemberRepo: MemberRepositoryInterface, PointRepo: PointRepositoryInterface, RateRepo: PointTypeRepositoryInterface) {
+	constructor (MemberRepo: MemberRepositoryInterface, PointRepo: PointRepositoryInterface, PointTypeRepo: PointTypeRepositoryInterface) {
 		this.MemberRepo = MemberRepo
 		this.PointRepo = PointRepo
-		this.RateRepo = RateRepo
+		this.PointTypeRepo = PointTypeRepo
 	}
 
 	public async save (Member: MemberEntity, Points: PointEntity []): Promise <number []> {
@@ -31,7 +31,7 @@ export class PointService {
 	public async earn (data: { Member: number, RawAmount: number, ActivityCode: string, Reference: number, Parent?: number }): Promise <number []> {
 		try {
 			let { Member, RawAmount, ActivityCode, Reference, Parent } = data
-			let Rate = await this.RateRepo.findByCode (ActivityCode)
+			let Rate = await this.PointTypeRepo.findByCode (ActivityCode)
 
 			let Point = new PointEntity ()
 			Point.createPointEarning ({
@@ -54,7 +54,7 @@ export class PointService {
 	public async spend (data: { Member: number, RawAmount: number, ActivityCode: string, Reference: number }): Promise <number []> {
 		try {
 			let { Member, RawAmount, ActivityCode, Reference } = data
-			let Rate = await this.RateRepo.findByCode (ActivityCode)
+			let Rate = await this.PointTypeRepo.findByCode (ActivityCode)
 
 			let PointUsage = new PointEntity ()
 			PointUsage.createPointSpending ({
