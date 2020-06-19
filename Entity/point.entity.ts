@@ -87,7 +87,7 @@ export class PointEntity {
 		this.Reference = data.Reference
 
 		let { Code, Rate, ExpiredMonth } = data.Rate.toPoint ()
-		let PointAmount = data.RawAmount / Rate
+		let PointAmount = Math.floor (data.RawAmount / Rate)
 
 		this.Activity = Code
 		this.Rate = Rate
