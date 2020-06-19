@@ -96,8 +96,10 @@ export class MemberEntity {
 		if (trx.getMember () !== this.Id) throw new Error ('Invalid spending assignment')
 		if (trx.getSpending () > 0 && !this.Status) throw new Error ('Member Inactive')
 		let spending = trx.getSpending ()
-		this.YTDSpending += spending
-		this.LifetimeSpending += spending
+		this.YTDSpending = +this.YTDSpending + parseInt (spending)
+		this.LifetimeSpending = +this.LifetimeSpending + parseInt (spending)
+		this.LifetimeVisit ++
+		this.YTDVisit ++
 	}
 
 	public getTier (): number {
