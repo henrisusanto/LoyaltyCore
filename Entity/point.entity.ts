@@ -168,8 +168,7 @@ export class PointEntity {
 	public createPointCancel (pointToCancel): void {
 		let { YTD, Lifetime } = pointToCancel.getPointAmount ()
 		let Remaining = pointToCancel.getLifetimeRemaining ()
-		if (YTD === Lifetime === Remaining) {}
-		else throw new Error ('Point Already used')
+		if (Lifetime !== Remaining) throw new Error ('Point Already used')
 
 		this.Member = pointToCancel.getMember ()
 		this.Time = new Date ()

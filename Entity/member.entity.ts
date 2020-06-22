@@ -92,14 +92,23 @@ export class MemberEntity {
 		else this.LifetimePoint += Lifetime
 	}
 
-	public submitSpending (trx): void {
-		if (trx.getMember () !== this.Id) throw new Error ('Invalid spending assignment')
-		if (trx.getSpending () > 0 && !this.Status) throw new Error ('Member Inactive')
-		let spending = trx.getSpending ()
+	public submitTransaction (transaction) {
+		if (transaction.getMember () !== this.Id) throw new Error ('Invalid spending assignment')
+		if (!this.Status) throw new Error ('Member Inactive')
+		let spending = transaction.getSpending ()
 		this.YTDSpending = +this.YTDSpending + parseInt (spending)
 		this.LifetimeSpending = +this.LifetimeSpending + parseInt (spending)
 		this.LifetimeVisit ++
 		this.YTDVisit ++
+	}
+
+	public cancelTransaction (transaction) {
+		if (transaction.getMember () !== this.Id) throw new Error ('Invalid spending assignment')
+		let spending = transaction.getSpending ()
+		this.YTDSpending = +this.YTDSpending + parseInt (spending)
+		this.LifetimeSpending = +this.LifetimeSpending + parseInt (spending)
+		this.LifetimeVisit --
+		this.YTDVisit --
 	}
 
 	public getTier (): number {
