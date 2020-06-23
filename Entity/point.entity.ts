@@ -66,6 +66,15 @@ interface PointReport {
 	Remarks: string
 }
 
+interface PointTransaction {
+	Activity: string
+	YTDAmount: number
+	LifetimeAmount: number
+	LifetimeExpiredDate: Date
+	Remarks: string
+	Rate: number
+}
+
 export class PointEntity {
 	protected Id?: number
 	protected Parent?: number
@@ -205,6 +214,14 @@ export class PointEntity {
 		return this.Time
 	}
 
+	public getReference (): number {
+		return this.Reference
+	}
+
+	public getActivity (): string {
+		return this.Activity
+	}
+
 	public use (point: number): void {
 		this.LifetimeRemaining -= Math.abs(point)
 		this.HasChanges = true
@@ -234,6 +251,17 @@ export class PointEntity {
 		}
 	}
 
+	public toTransaction (): PointTransaction {
+		return {
+			Activity: this.Activity,
+			YTDAmount: this.YTDAmount,
+			LifetimeAmount: this.LifetimeAmount,
+			LifetimeExpiredDate: this.LifetimeExpiredDate,
+			Remarks: this.Remarks,
+			Rate: this.Rate
+		}
+	}
+
 	public fromJSON (data: PointJSON) {
 		this.Id = data.Id
 		this.Parent = data.Parent
@@ -246,6 +274,7 @@ export class PointEntity {
 		this.LifetimeRemaining = data.LifetimeRemaining
 		this.LifetimeExpiredDate = data.LifetimeExpiredDate
 		this.Remarks = data.Remarks
+		this.Rate = data.Rate
 
 		this.HasChanges = false
 	}

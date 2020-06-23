@@ -16,5 +16,7 @@ export interface PointRepositoryInterface {
 	getDistinctMemberExpiredPoint (Limit: number, ExpiredCriteria: {}): Promise <number []>
 	getExpiredByMembers (Member: number [], ExpiredCriteria: {}): Promise <PointEntity []>
 	findByReference (data: {Reference: number, Activity: string}): Promise <PointEntity>
+	findByReferences (data: {Activity: string, References: number[]}): Promise <PointEntity[]>
+	findByParents (Parents: number[]): Promise <PointEntity[]>
 	delete (Id: number): Promise <boolean>
 }

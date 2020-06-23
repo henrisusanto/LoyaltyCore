@@ -22,6 +22,14 @@ export class PointTypeEntity {
 	protected Rate: number
 	protected ExpiredMonth: number
 
+	public getCode (): string {
+		return this.Code
+	}
+
+	public getDescription (): string {
+		return this.Description
+	}
+
 	public update (data: PointTypeJSON) {
 		this.Description = data.Description
 		this.Rate = data.Rate
